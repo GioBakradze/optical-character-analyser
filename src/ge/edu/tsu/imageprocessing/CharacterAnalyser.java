@@ -22,13 +22,13 @@ import ge.edu.tsu.graph.GraphListener;
 import ge.edu.tsu.imageprocessing.noise.NoiseRemover;
 import ge.edu.tsu.imageprocessing.segmentation.GrayLevelSegmenter;
 
-public class CharacterRegonizer {
+public class CharacterAnalyser {
 
 	private GrayLevelSegmenter segmenter;
 	private NoiseRemover unnoise;
 	private Mat image;
 
-	public CharacterRegonizer(GrayLevelSegmenter segmenter, NoiseRemover unnoise, String imagePath) {
+	public CharacterAnalyser(GrayLevelSegmenter segmenter, NoiseRemover unnoise, String imagePath) {
 		this.segmenter = segmenter;
 		this.unnoise = unnoise;
 		this.image = Imgcodecs.imread(imagePath);
