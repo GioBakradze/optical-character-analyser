@@ -2,6 +2,7 @@ package ge.edu.tsu.imageprocessing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 import org.opencv.core.Core;
@@ -136,9 +137,7 @@ public class CharacterAnalyser {
 			}
 
 			zeroCols.add(x + w);
-			
-			Mat tmpImage = new Mat(200, 1000, CvType.CV_8UC1);
-			
+
 			// blocks
 			for (int j = 0; j < zeroCols.size() - 1; j++) {
 				Graph<Point> symbol = new Graph<Point>();
@@ -163,17 +162,42 @@ public class CharacterAnalyser {
 						}
 					}
 				}
+				System.out.println(blackRowsOrderedList.size());
+				// filter unnecessary upper rows
+				boolean breakCycle = false;
+				for (Iterator<ArrayList<Point>> it = blackRowsOrderedList.iterator(); it.hasNext();) {
+					ArrayList<Point> row = it.next();
+					for (Point p : row) {
+						if (image.get((int) p.y + 1, (int) p.x)[0] == 0) {
+							if (blackRowsList.get(new Point(p.x, p.y + 1)).size() >= row.size()) {
+								for (Point p2 : row) {
+									blackRowsList.remove(p2);
+								}
+								it.remove();
+								break;
+							} else {
+								breakCycle = true;
+								break;								
+							}
+						}
+					}
+					 if (breakCycle) break;
+				}
+				
+				System.out.println(blackRowsOrderedList.size());
 
 				for (ArrayList<Point> row : blackRowsOrderedList) {
 					Point middle = row.get(row.size() / 2);
-					// image.put((int) row.get(row.size()/2).y, (int)
-					// row.get(row.size()/2).x, new double[] {100});
 
 					// build graph
 					for (Point p : row) {
+						if (!blackRowsList.containsKey(p)) break;
+						
 						if (image.get((int) p.y - 1, (int) p.x)[0] == 0) {
 							Point tmp = new Point(p.x, p.y - 1);
-							symbol.put(middle, blackRowsList.get(tmp).get(blackRowsList.get(tmp).size() / 2));
+							
+							if (blackRowsList.containsKey(tmp))
+								symbol.put(middle, blackRowsList.get(tmp).get(blackRowsList.get(tmp).size() / 2));
 						}
 					}
 				}
@@ -182,7 +206,6 @@ public class CharacterAnalyser {
 					@Override
 					public void onNode(Point p) {
 						image.put((int) p.y, (int) p.x, new double[] { 100 });
-						tmpImage.put((int) p.y, (int) p.x, new double[] { 100 });
 						int size = symbol.get(p).size();
 						if (size != 2) {
 							if (!invariants.containsKey(size))
@@ -197,8 +220,6 @@ public class CharacterAnalyser {
 				System.out.println(invariants);
 
 			}
-			
-//			this.image = tmpImage;
 		}
 	}
 
