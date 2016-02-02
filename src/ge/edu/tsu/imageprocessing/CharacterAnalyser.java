@@ -22,6 +22,10 @@ import ge.edu.tsu.graph.GraphListener;
 import ge.edu.tsu.imageprocessing.noise.NoiseRemover;
 import ge.edu.tsu.imageprocessing.segmentation.GrayLevelSegmenter;
 
+// TODO: კითხვები
+// სხვადასხვა ფონტში ბ-ს აქვს სხვადასხვა ფორმა, როგორია b-ს ტოპოლოგიური ინვარიანტები
+// 
+
 public class CharacterAnalyser {
 
 	private GrayLevelSegmenter segmenter;

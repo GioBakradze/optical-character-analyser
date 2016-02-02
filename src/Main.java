@@ -14,7 +14,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		CharacterAnalyser recognizer = new CharacterAnalyser(new OpenCVSegmenter(), new OpenCVNoiseRemover(),
-				"assets/abc.jpg");
+				"assets/abc-acadnusx.jpg");
 
 		recognizer.recognize();
 		Mat newImage = recognizer.getImage();
