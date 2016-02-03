@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -151,51 +152,32 @@ public class CharacterAnalyser {
 
 					// columns of block
 					for (int k = zeroCols.get(j); k < zeroCols.get(j + 1); k++) {
-						if (this.image.get(l, k)[0] == 255) {
+						if (this.image.get(l, k)[0] == 255 || k == zeroCols.get(j + 1) - 1) {
+							if (blacksRow.size() != 0)
+								blackRowsOrderedList.add(blacksRow);
 							blacksRow = new ArrayList<Point>();
 						}
 
 						if (image.get(l, k)[0] == 0) {
 							blacksRow.add(new Point(k, l));
 							blackRowsList.put(new Point(k, l), blacksRow);
-							blackRowsOrderedList.add(blacksRow);
 						}
 					}
 				}
-				System.out.println(blackRowsOrderedList.size());
-				// filter unnecessary upper rows
-				boolean breakCycle = false;
-				for (Iterator<ArrayList<Point>> it = blackRowsOrderedList.iterator(); it.hasNext();) {
-					ArrayList<Point> row = it.next();
-					for (Point p : row) {
-						if (image.get((int) p.y + 1, (int) p.x)[0] == 0) {
-							if (blackRowsList.get(new Point(p.x, p.y + 1)).size() >= row.size()) {
-								for (Point p2 : row) {
-									blackRowsList.remove(p2);
-								}
-								it.remove();
-								break;
-							} else {
-								breakCycle = true;
-								break;								
-							}
-						}
-					}
-					 if (breakCycle) break;
-				}
-				
-				System.out.println(blackRowsOrderedList.size());
+
+				removeExtraRows(blackRowsOrderedList, blackRowsList, true);
+				removeExtraRows(blackRowsOrderedList, blackRowsList, false);
 
 				for (ArrayList<Point> row : blackRowsOrderedList) {
 					Point middle = row.get(row.size() / 2);
 
 					// build graph
 					for (Point p : row) {
-						if (!blackRowsList.containsKey(p)) break;
-						
+						if (!blackRowsList.containsKey(p))
+							break;
 						if (image.get((int) p.y - 1, (int) p.x)[0] == 0) {
 							Point tmp = new Point(p.x, p.y - 1);
-							
+
 							if (blackRowsList.containsKey(tmp))
 								symbol.put(middle, blackRowsList.get(tmp).get(blackRowsList.get(tmp).size() / 2));
 						}
@@ -218,8 +200,51 @@ public class CharacterAnalyser {
 				});
 
 				System.out.println(invariants);
+				System.out.println("=========");
 
 			}
+		}
+	}
+
+	private void removeExtraRows(LinkedHashSet<ArrayList<Point>> blackRowsOrderedList,
+			HashMap<Point, ArrayList<Point>> blackRowsList, boolean upper) {
+
+		if (blackRowsOrderedList.size() == 0 || blackRowsList.size() == 0)
+			return;
+
+		Iterator<ArrayList<Point>> it = blackRowsOrderedList.iterator();
+		int nextY = 0;
+		if (upper) {
+			nextY = 1;
+		} else {
+			nextY = -1;
+			it = new LinkedList<ArrayList<Point>>(blackRowsOrderedList).descendingIterator();
+		}
+
+		boolean breakCycle = false;
+		for (; it.hasNext();) {
+			ArrayList<Point> row = it.next();
+			for (Point p : row) {
+				if (image.get((int) p.y + nextY, (int) p.x)[0] == 0) {
+					Point tmp = new Point(p.x, p.y + nextY);
+
+					if (!blackRowsList.containsKey(tmp))
+						continue;
+
+					if (blackRowsList.get(tmp).size() >= row.size()) {
+						for (Point p2 : row) {
+							blackRowsList.remove(p2);
+						}
+						it.remove();
+						break;
+					} else {
+						breakCycle = true;
+						break;
+					}
+				}
+			}
+			if (breakCycle)
+				break;
 		}
 	}
 
