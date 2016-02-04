@@ -26,7 +26,7 @@ import ge.edu.tsu.imageprocessing.segmentation.GrayLevelSegmenter;
 
 // TODO: კითხვები
 // სხვადასხვა ფონტში ბ-ს აქვს სხვადასხვა ფორმა, როგორია b-ს ტოპოლოგიური ინვარიანტები
-// 
+// როგორია ვ-ს ტოპოლოგიური ინვარიანტები? საიდან უნდა დავთვალოთ ან წინასწარ როგორ განვსაზღვროთ
 
 public class CharacterAnalyser {
 
