@@ -13,4 +13,8 @@ public abstract class AlgorithmDecorator implements Algorithm {
 	@Override
 	public abstract Mat execute(Mat image);
 
+	protected int colorAt(Mat image, int x, int y) {
+		return (int) image.get(y, x)[0];
+	}
+
 }
