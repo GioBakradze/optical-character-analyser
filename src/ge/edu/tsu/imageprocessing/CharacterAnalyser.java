@@ -117,27 +117,21 @@ public class CharacterAnalyser {
 		}
 
 		Imgproc.cvtColor(this.image, this.image, Imgproc.COLOR_BGR2GRAY);
-		// Imgproc.threshold(this.image, this.image, 0, 255, Imgproc.THRESH_OTSU
-		// + Imgproc.THRESH_BINARY);
-		// Imgproc.morphologyEx(this.image, this.image, Imgproc.MORPH_OPEN,
-		// Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3)));
-
-		// Imgproc.blur(this.image, this.image, new Size(3.0, 3.0));
-		Imgproc.GaussianBlur(this.image, this.image, new Size(3.0, 3.0), 0);
+		// Imgproc.GaussianBlur(this.image, this.image, new Size(3.0, 3.0), 0);
 		Imgproc.adaptiveThreshold(this.image, this.image, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
 				Imgproc.THRESH_BINARY, 15, 4);
 
 		Mat secondImage = new Mat();
 		image.copyTo(secondImage);
 
-		// Core.bitwise_not(secondImage, secondImage);
-
 		// ##########################################################
 		// Zhang-Suen thinning algorithm
 		// https://rosettacode.org/wiki/Zhang-Suen_thinning_algorithm
 		ArrayList<Point> pointsToChange;
 
-		for (int l = 1; l <= 10; l++) {
+		do {
+			image.copyTo(secondImage);
+
 			// step 1
 			pointsToChange = new ArrayList<Point>();
 			for (int i = 1; i < image.rows() - 1; i++) {
@@ -187,7 +181,20 @@ public class CharacterAnalyser {
 			for (Point p : pointsToChange) {
 				image.put((int) p.y, (int) p.x, new double[] { 255 });
 			}
-		}
+
+			boolean allEquals = true;
+			for (int i = 0; i < image.rows(); i++) {
+				for (int j = 0; j < image.cols(); j++) {
+					if (image.get(i, j)[0] != secondImage.get(i, j)[0])
+						allEquals = false;
+				}
+			}
+
+			if (allEquals)
+				break;
+
+			image.copyTo(secondImage);
+		} while (true);
 
 		// Mat edges = new Mat();
 		// Imgproc.Canny(this.image, edges, 10, 100);
