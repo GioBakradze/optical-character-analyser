@@ -19,49 +19,165 @@ public class SaltRemover extends AlgorithmDecorator {
 		Mat newImage = algorithm.execute(image);
 		ArrayList<Point> pointsToRemove = new ArrayList<Point>();
 
-		for (int i = 1; i < newImage.rows() - 1; i++) {
-			for (int j = 1; j < newImage.cols() - 1; j++) {
-				if (calcBlackNeighbours(newImage, j, i) == 1) {
-					pointsToRemove.add(new Point(j, i));
+//		for (int i = 1; i < newImage.rows() - 1; i++) {
+//			for (int j = 1; j < newImage.cols() - 1; j++) {
+//				if (calcBlackNeighbours(newImage, j, i) == 1) {
+//					pointsToRemove.add(new Point(j, i));
+//				}
+//			}
+//		}
+//
+//		for (Point p : pointsToRemove) {
+//			newImage.put((int) p.y, (int) p.x, new double[] { 255 });
+//		}
+		
+		while (true) {
+			pointsToRemove = new ArrayList<Point>();
+			for (int i = 1; i < newImage.rows() - 1; i++) {
+				for (int j = 1; j < newImage.cols() - 1; j++) {
+					// remove attached points
+					try {
+						
+						// ###########################
+						// attached to corners
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 0,   255, 255 },
+							new double[] { 255, 0,   255 }, 
+							new double[] { 255, 255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 0 },
+							new double[] { 255, 0,   255 }, 
+							new double[] { 255, 255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 255 },
+							new double[] { 255, 0,   255 }, 
+							new double[] { 255, 255, 0 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 255 },
+							new double[] { 255, 0,   255 }, 
+							new double[] { 0,   255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						// ###########################
+						// attached to sides
+						// attached to left
+						if (matchesPattern(newImage, j, i, new double[][] { 
+								new double[] { 0,   255, 255 },
+								new double[] { 0,   0,   255 }, 
+								new double[] { 255, 255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 255 },
+							new double[] { 0,   0,   255 }, 
+							new double[] { 0,   255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}						
+						
+						// attached to top
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255,   0,   0 },
+							new double[] { 255,   0,   255 }, 
+							new double[] { 255, 255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 0,     0, 255 },
+							new double[] { 255,   0, 255 }, 
+							new double[] { 255, 255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}						
+						
+						// attached to right
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 0 },
+							new double[] { 255, 0,   0 }, 
+							new double[] { 255, 255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 255 },
+							new double[] { 255, 0,   0 }, 
+							new double[] { 255, 255, 0 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}						
+						
+						// attached to bottom
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 255 },
+							new double[] { 255, 0,   255 }, 
+							new double[] { 0,   0,   255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 255 },
+							new double[] { 255, 0,   255 }, 
+							new double[] { 255, 0,   0 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						// ###########################
+						// tricky corners
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 255, 255 },
+							new double[] { 0,   0,   255 }, 
+							new double[] { 255, 0,   0 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 0,   0 },
+							new double[] { 0,   0,   255 }, 
+							new double[] { 255, 255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255, 0,   255 },
+							new double[] { 0,   0,   255 }, 
+							new double[] { 0,   255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255,  0,   255 },
+							new double[] { 255,  0,   0 }, 
+							new double[] { 255,  255, 0 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+						
+						if (matchesPattern(newImage, j, i, new double[][] { 
+							new double[] { 255,  0,   0 },
+							new double[] { 0,    0,   255 }, 
+							new double[] { 0,    255, 255 } })) {
+							pointsToRemove.add(new Point(j, i));
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
+			}
+			
+			if (pointsToRemove.size() == 0) break;
+			
+			for (Point p : pointsToRemove) {
+				newImage.put((int) p.y, (int) p.x, new double[] { 255 });
 			}
 		}
 
-		for (Point p : pointsToRemove) {
-			newImage.put((int) p.y, (int) p.x, new double[] { 255 });
-		}
-
 		return newImage;
-	}
-
-	private int calcBlackNeighbours(Mat image, int x, int y) {
-		int res = 0;
-
-		if (colorAt(image, x - 1, y - 1) == 0)
-			res++;
-
-		if (colorAt(image, x, y - 1) == 0)
-			res++;
-
-		if (colorAt(image, x + 1, y - 1) == 0)
-			res++;
-
-		if (colorAt(image, x - 1, y) == 0)
-			res++;
-
-		if (colorAt(image, x + 1, y) == 0)
-			res++;
-
-		if (colorAt(image, x - 1, y + 1) == 0)
-			res++;
-
-		if (colorAt(image, x, y + 1) == 0)
-			res++;
-
-		if (colorAt(image, x + 1, y + 1) == 0)
-			res++;
-
-		return res;
 	}
 
 }
