@@ -73,42 +73,43 @@ public abstract class AlgorithmDecorator implements Algorithm {
 			for (int j = startX; j <= endX; j++) {
 				if (pointIsBlack(image, j, i)) {
 					Point currentPoint = new Point(j, i);
+					graph.put(currentPoint);
 
-					if (i == startY && j == startX) {
-						// left top corner pixel
-
+					// upper and lower borders
+					if ((i == startY || i == endY) && (j < endX)) {
 						if (pointIsBlack(image, j + 1, i))
 							graph.put(currentPoint, new Point(j + 1, i));
+					}
 
+					// left and right borders
+					if ((j == startX || j == endX) && i < endY) {
 						if (pointIsBlack(image, j, i + 1))
 							graph.put(currentPoint, new Point(j, i + 1));
+					}
 
-					} else if (i == startY && j == endX) {
-						// right top corner pixel
-						if (pointIsBlack(image, j - 1, i))
-							graph.put(currentPoint, new Point(j - 1, i));
+					// tricky parts
+					if (j == startX + 1 && i == startY) {
+						if (pointIsBlack(image, j - 1, i + 1))
+							graph.put(currentPoint, new Point(j - 1, i + 1));
+					}
 
-						if (pointIsBlack(image, j, i + 1))
-							graph.put(currentPoint, new Point(j, i + 1));
+					if (j == endX - 1 && i == startY) {
+						if (pointIsBlack(image, j + 1, i + 1))
+							graph.put(currentPoint, new Point(j + 1, i + 1));
+					}
 
-					} else if (i == endY && j == startX) {
-						// left bottom corner pixel
+					if (j == startX + 1 && i == endY) {
+						if (pointIsBlack(image, j - 1, i - 1))
+							graph.put(currentPoint, new Point(j - 1, i - 1));
+					}
 
-						if (pointIsBlack(image, j + 1, i))
-							graph.put(currentPoint, new Point(j + 1, i));
+					if (j == endX - 1 && i == endY) {
+						if (pointIsBlack(image, j + 1, i - 1))
+							graph.put(currentPoint, new Point(j + 1, i - 1));
+					}
 
-						if (pointIsBlack(image, j, i - 1))
-							graph.put(currentPoint, new Point(j, i - 1));
-
-					} else if (i == endY && j == endX) {
-						// right bottom corner pixel
-						if (pointIsBlack(image, j - 1, i))
-							graph.put(currentPoint, new Point(j - 1, i));
-
-						if (pointIsBlack(image, j, i - 1))
-							graph.put(currentPoint, new Point(j, i - 1));
-
-					} else {
+					// center area
+					if (j > startX && j < endX && i > startY && i < endY) {
 						for (Point p : getBlackNeighbours(image, j, i)) {
 							graph.put(currentPoint, p);
 						}
