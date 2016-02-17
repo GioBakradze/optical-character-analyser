@@ -1,7 +1,5 @@
 package ge.edu.tsu.imageprocessing;
 
-import java.util.ArrayList;
-
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
@@ -15,37 +13,83 @@ public class SaltRemover extends AlgorithmDecorator {
 
 	@Override
 	public Mat execute(Mat image) {
-		// after ZhangSuen thinning there are left some lonely pixels
-		// which are attached to actual symbols, so we should remove them
-
 		Mat newImage = algorithm.execute(image);
-		ArrayList<Point> pointsToRemove;
+		int pointsToRemove;
 
-		while (true) {
-			pointsToRemove = new ArrayList<Point>();
+		// first we need to thin bulky places
+		// this cycle simply creates local graph for each black point
+		// then checks if removal of central point creates two or more
+		// components, if not then we can safely remove the point
+		for (;;) {
+			pointsToRemove = 0;
 
 			for (int i = 1; i < newImage.rows() - 1; i++) {
 				for (int j = 1; j < newImage.cols() - 1; j++) {
 
+					Point currentPoint = new Point(j, i);
+
 					if (pointIsBlack(newImage, j, i)) {
-						Point currentPoint = new Point(j, i); 
 						Graph<Point> gr = buildAreaGraph(newImage, new Point(j - 1, i - 1), new Point(j + 1, i + 1));
+
+						if (gr.all().size() == 2)
+							continue;
+
 						gr.removeNode(currentPoint);
 						if (gr.isConnected()) {
-							newImage.put(i, j, new double[] { 255 });
-//							pointsToRemove.add(currentPoint);
+							setColorAt(newImage, j, i, COLOR_WHITE);
+							pointsToRemove++;
 						}
 					}
 				}
 			}
 
-			if (pointsToRemove.size() == 0)
+			if (pointsToRemove == 0)
 				break;
+		}
 
-			for (Point p : pointsToRemove) {
-				newImage.put((int) p.y, (int) p.x, new double[] { 255 });
+		// now we have to remove corner pixels
+		while (true) {
+			pointsToRemove = 0;
+
+			for (int i = 1; i < newImage.rows() - 1; i++) {
+				for (int j = 1; j < newImage.cols() - 1; j++) {
+
+					try {
+						if (matchesPattern(newImage, j, i, new double[][] { new double[] { 0, 255, 255 },
+								new double[] { 255, 0, 255 }, new double[] { 255, 255, 255 } })) {
+
+							pointsToRemove++;
+							setColorAt(newImage, j, i, COLOR_WHITE);
+						}
+
+						if (matchesPattern(newImage, j, i, new double[][] { new double[] { 255, 255, 0 },
+								new double[] { 255, 0, 255 }, new double[] { 255, 255, 255 } })) {
+
+							pointsToRemove++;
+							setColorAt(newImage, j, i, COLOR_WHITE);
+						}
+
+						if (matchesPattern(newImage, j, i, new double[][] { new double[] { 255, 255, 255 },
+								new double[] { 255, 0, 255 }, new double[] { 255, 255, 0 } })) {
+
+							pointsToRemove++;
+							setColorAt(newImage, j, i, COLOR_WHITE);
+						}
+
+						if (matchesPattern(newImage, j, i, new double[][] { new double[] { 255, 255, 255 },
+								new double[] { 255, 0, 255 }, new double[] { 0, 255, 255 } })) {
+
+							pointsToRemove++;
+							setColorAt(newImage, j, i, COLOR_WHITE);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+				}
 			}
-			break;
+			if (pointsToRemove == 0)
+				break;
 		}
 
 		return newImage;

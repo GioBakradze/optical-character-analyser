@@ -2,14 +2,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
-import ge.edu.tsu.imageprocessing.Algorithm;
-import ge.edu.tsu.imageprocessing.CharacterAnalyser;
-import ge.edu.tsu.imageprocessing.GaussianAdaptiveThreshold;
-import ge.edu.tsu.imageprocessing.GrayScale;
-import ge.edu.tsu.imageprocessing.SaltRemover;
-import ge.edu.tsu.imageprocessing.ZhangSuenThinning;
-import ge.edu.tsu.imageprocessing.noise.OpenCVNoiseRemover;
-import ge.edu.tsu.imageprocessing.segmentation.OpenCVSegmenter;
+import ge.edu.tsu.imageprocessing.*;
 
 public class Main {
 
@@ -19,12 +12,8 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
-		CharacterAnalyser recognizer = new CharacterAnalyser(new OpenCVSegmenter(), new OpenCVNoiseRemover(),
-				"assets/abc.jpg");
-				// recognizer.recognize();
-				// Mat newImage = recognizer.getImage();
-
 		// new way
+		// chain algorithms together
 		Algorithm invariants = new SaltRemover(new ZhangSuenThinning(new GaussianAdaptiveThreshold(new GrayScale())));
 		Mat newImage = invariants.execute(Imgcodecs.imread("assets/abc.jpg"));
 

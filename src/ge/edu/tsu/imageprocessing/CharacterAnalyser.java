@@ -21,8 +21,6 @@ import org.opencv.imgproc.Imgproc;
 
 import ge.edu.tsu.graph.Graph;
 import ge.edu.tsu.graph.GraphListener;
-import ge.edu.tsu.imageprocessing.noise.NoiseRemover;
-import ge.edu.tsu.imageprocessing.segmentation.GrayLevelSegmenter;
 
 // TODO: კითხვები
 // სხვადასხვა ფონტში ბ-ს აქვს სხვადასხვა ფორმა, როგორია b-ს ტოპოლოგიური ინვარიანტები
@@ -30,13 +28,9 @@ import ge.edu.tsu.imageprocessing.segmentation.GrayLevelSegmenter;
 
 public class CharacterAnalyser {
 
-	private GrayLevelSegmenter segmenter;
-	private NoiseRemover unnoise;
 	private Mat image;
 
-	public CharacterAnalyser(GrayLevelSegmenter segmenter, NoiseRemover unnoise, String imagePath) {
-		this.segmenter = segmenter;
-		this.unnoise = unnoise;
+	public CharacterAnalyser(String imagePath) {
 		this.image = Imgcodecs.imread(imagePath);
 	}
 
@@ -120,7 +114,6 @@ public class CharacterAnalyser {
 		// Imgproc.GaussianBlur(this.image, this.image, new Size(3.0, 3.0), 0);
 		Imgproc.adaptiveThreshold(this.image, this.image, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C,
 				Imgproc.THRESH_BINARY, 15, 4);
-
 
 		// Mat edges = new Mat();
 		// Imgproc.Canny(this.image, edges, 10, 100);
