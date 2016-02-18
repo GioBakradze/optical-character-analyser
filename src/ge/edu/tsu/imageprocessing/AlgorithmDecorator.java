@@ -10,9 +10,9 @@ import ge.edu.tsu.graph.Graph;
 public abstract class AlgorithmDecorator implements Algorithm {
 
 	protected Algorithm algorithm;
-	protected static int COLOR_WHITE = 255;
-	protected static int COLOR_BLACK = 0;
-	protected static int COLOR_GRAY = 200;
+	public static final int COLOR_WHITE = 255;
+	public static final int COLOR_BLACK = 0;
+	public static final int COLOR_GRAY = 200;
 
 	public AlgorithmDecorator(Algorithm algorithm) {
 		this.algorithm = algorithm;
@@ -65,7 +65,7 @@ public abstract class AlgorithmDecorator implements Algorithm {
 		return colorAt(image, x, y) == 0;
 	}
 
-	protected Graph<Point> buildAreaGraph(Mat image, Point start, Point end) {
+	public Graph<Point> buildAreaGraph(Mat image, Point start, Point end) {
 		Graph<Point> graph = new Graph<Point>();
 		int startY = (int) start.y;
 		int endY = (int) end.y;
@@ -123,9 +123,9 @@ public abstract class AlgorithmDecorator implements Algorithm {
 
 		return graph;
 	}
-	
+
 	protected void setColorAt(Mat image, int x, int y, double color) {
-		image.put(y, x, new double[] {color});
+		image.put(y, x, new double[] { color });
 	}
 
 	protected ArrayList<Point> getBlackNeighbours(Mat image, int x, int y) {
