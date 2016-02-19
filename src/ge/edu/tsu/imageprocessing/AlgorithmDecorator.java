@@ -10,6 +10,7 @@ import ge.edu.tsu.graph.Graph;
 public abstract class AlgorithmDecorator implements Algorithm {
 
 	protected Algorithm algorithm;
+	protected Mat image;
 	public static final int COLOR_WHITE = 255;
 	public static final int COLOR_BLACK = 0;
 	public static final int COLOR_GRAY = 200;
@@ -17,11 +18,15 @@ public abstract class AlgorithmDecorator implements Algorithm {
 	public AlgorithmDecorator(Algorithm algorithm) {
 		this.algorithm = algorithm;
 	}
+	
+	public AlgorithmDecorator(Mat image) {
+		this.image = image;
+	}
 
 	@Override
 	public abstract Mat execute(Mat image);
 
-	protected int colorAt(Mat image, int x, int y) {
+	public static int colorAt(Mat image, int x, int y) {
 		return (int) image.get(y, x)[0];
 	}
 
@@ -61,11 +66,11 @@ public abstract class AlgorithmDecorator implements Algorithm {
 		}
 	}
 
-	protected boolean pointIsBlack(Mat image, int x, int y) {
+	public static boolean pointIsBlack(Mat image, int x, int y) {
 		return colorAt(image, x, y) == 0;
 	}
 
-	public Graph<Point> buildAreaGraph(Mat image, Point start, Point end) {
+	public static Graph<Point> buildAreaGraph(Mat image, Point start, Point end) {
 		Graph<Point> graph = new Graph<Point>();
 		int startY = (int) start.y;
 		int endY = (int) end.y;
@@ -128,7 +133,7 @@ public abstract class AlgorithmDecorator implements Algorithm {
 		image.put(y, x, new double[] { color });
 	}
 
-	protected ArrayList<Point> getBlackNeighbours(Mat image, int x, int y) {
+	public static ArrayList<Point> getBlackNeighbours(Mat image, int x, int y) {
 		ArrayList<Point> res = new ArrayList<Point>();
 
 		if (colorAt(image, x - 1, y - 1) == 0)

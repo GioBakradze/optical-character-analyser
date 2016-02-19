@@ -13,8 +13,7 @@ public class OtsuThreshold extends AlgorithmDecorator {
 	}
 
 	public OtsuThreshold(Mat image) {
-		super(null);
-		this.image = image;
+		super(image);
 	}
 
 	@Override

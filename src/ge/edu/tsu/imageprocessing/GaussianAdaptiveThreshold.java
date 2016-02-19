@@ -9,9 +9,19 @@ public class GaussianAdaptiveThreshold extends AlgorithmDecorator {
 		super(algorithm);
 	}
 
+	public GaussianAdaptiveThreshold(Mat image) {
+		super(image);
+	}
+
 	@Override
 	public Mat execute(Mat image) {
-		Mat newImage = algorithm.execute(image);
+		Mat newImage;
+
+		if (algorithm == null)
+			newImage = this.image;
+		else
+			newImage = algorithm.execute(image);
+
 		Imgproc.adaptiveThreshold(newImage, newImage, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY,
 				15, 4);
 		return newImage;
