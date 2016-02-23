@@ -2,23 +2,26 @@ package ge.edu.tsu.graph;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Graph<E> {
 
 	private HashMap<E, HashSet<E>> graph;
 	private HashSet<E> nodes;
 	private HashSet<E> visited;
+	private HashSet<E> subTree;
 	private int components;
 
 	public Graph() {
 		graph = new HashMap<E, HashSet<E>>();
 		nodes = new HashSet<E>();
 	}
-	
+
 	public void put(E e) {
 		nodes.add(e);
 		if (!graph.containsKey(e))
-			graph.put(e, new HashSet<E>());		
+			graph.put(e, new HashSet<E>());
 	}
 
 	public void put(E e1, E e2) {
@@ -58,6 +61,14 @@ public class Graph<E> {
 			@Override
 			public void onNode(E e) {
 			}
+
+			@Override
+			public void onNode(E element, E parent) {
+			}
+
+			@Override
+			public void onSubtree(HashSet<E> subtree) {
+			}
 		});
 
 		return components == 1;
@@ -69,7 +80,12 @@ public class Graph<E> {
 		for (E e : nodes) {
 			if (!visited.contains(e)) {
 				components++;
+				listener.onNode(e, null);
+				subTree = new HashSet<E>();
+
 				dfs(e, listener);
+
+				listener.onSubtree(subTree);
 			}
 		}
 	}
@@ -77,12 +93,45 @@ public class Graph<E> {
 	private void dfs(E e, GraphListener<E> listener) {
 		if (!visited.contains(e)) {
 			visited.add(e);
+			subTree.add(e);
 			listener.onNode(e);
 
 			for (E child : graph.get(e)) {
-				dfs(child, listener);
+
+				if (!visited.contains(child)) {
+					listener.onNode(child, e);
+					dfs(child, listener);
+				}
+
 			}
 		}
+	}
+
+	// TODO: we need to walk over all elements, it will now iterate only
+	// reachable
+	// nodes from first node
+	public void walkBFS(GraphListener<E> listener) {
+		if (nodes.size() == 0)
+			return;
+
+		Queue<E> queue = new LinkedList<E>();
+		queue.add(nodes.iterator().next());
+		visited = new HashSet<E>();
+		E currentElement;
+
+		while ((currentElement = queue.poll()) != null) {
+			visited.add(currentElement);
+			listener.onNode(currentElement);
+
+			for (E child : get(currentElement)) {
+				if (!visited.contains(child)) {
+					queue.add(child);
+					listener.onNode(child, currentElement);
+				}
+			}
+
+		}
+
 	}
 
 	@Override

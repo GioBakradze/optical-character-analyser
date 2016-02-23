@@ -2,6 +2,7 @@ package ge.edu.tsu.imageprocessing;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -102,23 +103,67 @@ public class CharacterAnalyser {
 
 		for (ArrayList<Point[]> word : glyphs) {
 			for (int i = 0; i < word.size(); i++) {
-				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
-				// new Scalar(AlgorithmDecorator.COLOR_GRAY),
-				// 1);
 
 				Graph<Point> graph = AlgorithmDecorator.buildAreaGraph(localImage, word.get(i)[0], word.get(i)[1]);
+				Graph<Point> componentsGraph = new Graph<Point>();
 				HashMap<Integer, Integer> invariants = new HashMap<Integer, Integer>();
-				invariants.put(1, 0);
 
 				graph.walk(new GraphListener<Point>() {
 					@Override
 					public void onNode(Point e) {
-						if (graph.get(e).size() == 1)
-							invariants.put(1, invariants.get(1) + 1);
+						if (graph.get(e).size() == 1) {
+							if (invariants.containsKey(1))
+								invariants.put(1, invariants.get(1) + 1);
+							else
+								invariants.put(1, 1);
+						}
+					}
+
+					@Override
+					public void onNode(Point element, Point parent) {
+						if (parent != null) {
+							if (graph.get(element).size() > 2 || graph.get(parent).size() > 2) {
+								componentsGraph.put(element, parent);
+							}
+						}
+					}
+
+					@Override
+					public void onSubtree(HashSet<Point> subtree) {
 					}
 				});
 
-				System.out.println(invariants);
+				componentsGraph.walk(new GraphListener<Point>() {
+
+					@Override
+					public void onSubtree(HashSet<Point> subtree) {
+						int currentInvs = 0;
+						for (Point p : subtree) {
+							if (graph.get(p).size() <= 2) {
+								currentInvs++;
+							}
+						}
+						
+						if (currentInvs <= 2)
+							return;
+						
+						if (invariants.containsKey(currentInvs))
+							invariants.put(currentInvs, invariants.get(currentInvs) + 1);
+						else
+							invariants.put(currentInvs, 1);
+					}
+
+					@Override
+					public void onNode(Point element, Point parent) {
+					}
+
+					@Override
+					public void onNode(Point e) {
+					}
+				});
+
+				if (invariants.size() > 0)
+					System.out.println(invariants);
 			}
 		}
 		return localImage;
