@@ -100,6 +100,9 @@ public class CharacterAnalyser {
 	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs) {
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
+		
+		// Georgian alphabet
+		int symbol = (int) 'ა';
 
 		for (ArrayList<Point[]> word : glyphs) {
 			for (int i = 0; i < word.size(); i++) {
@@ -108,7 +111,7 @@ public class CharacterAnalyser {
 				Graph<Point> componentsGraph = new Graph<Point>();
 				HashMap<Integer, Integer> invariants = new HashMap<Integer, Integer>();
 
-				graph.walk(new GraphListener<Point>() {
+				graph.walkBFS(new GraphListener<Point>() {
 					@Override
 					public void onNode(Point e) {
 						if (graph.get(e).size() == 1) {
@@ -162,10 +165,14 @@ public class CharacterAnalyser {
 					}
 				});
 
-				if (invariants.size() > 0)
-					System.out.println(invariants);
+				if (invariants.size() > 0) {
+					System.out.print( (char) symbol + "   " + invariants);
+					System.out.println();
+					symbol++;
+				}
 			}
 		}
+
 		return localImage;
 	}
 }

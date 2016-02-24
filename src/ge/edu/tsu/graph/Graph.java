@@ -127,6 +127,7 @@ public class Graph<E> {
 				if (!visited.contains(child)) {
 					queue.add(child);
 					listener.onNode(child, currentElement);
+					visited.add(child);
 				}
 			}
 
