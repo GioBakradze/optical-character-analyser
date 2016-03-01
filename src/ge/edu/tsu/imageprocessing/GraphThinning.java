@@ -23,8 +23,22 @@ public class GraphThinning extends AlgorithmDecorator {
 		Mat image = new Mat();
 		newImage.copyTo(image);
 		
-		Graph<Point> imageGraph = buildAreaGraph(image, new Point(0,0), new Point(image.cols() - 1, image.rows() - 1));
+//		Graph<Point> imageGraph = buildAreaGraph(image, new Point(0,0), new Point(image.cols() - 1, image.rows() - 1));
 		
+		for (int i=2; i < image.rows() - 2; i++) {
+			for (int j=2; j < image.cols() - 2; j++) {
+				try {
+					if (matchesPattern(image, j, i, new double[][] {
+							new double[] {-1,   0,  -1,  -1},
+							new double[] {-1,   0,  255,  -1},
+							new double[] {-1,   0,   0,   0},
+							new double[] {0,   -1,  -1,  -1}
+					})) {
+						setColorAt(image, j, i, COLOR_GRAY);
+					}
+				} catch(Exception e) {}
+			}
+		}
 		
 		
 		return image;

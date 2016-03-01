@@ -42,6 +42,8 @@ public abstract class AlgorithmDecorator implements Algorithm {
 
 		for (int i = 0; i < pattern.length; i++) {
 			for (int j = 0; j < pattern[i].length; j++) {
+				if (pattern[i][j] == -1) continue;
+				
 				if (pattern[i][j] != image.get(y - half + i, x - half + j)[0])
 					return false;
 			}

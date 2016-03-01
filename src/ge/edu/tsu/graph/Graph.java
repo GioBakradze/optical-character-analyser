@@ -47,6 +47,14 @@ public class Graph<E> {
 		graph.remove(e);
 	}
 
+	public void removeEdge(E e1, E e2) {
+		if (graph.containsKey(e1))
+			graph.get(e1).remove(e2);
+
+		if (graph.containsKey(e2))
+			get(e2).remove(e1);
+	}
+
 	public HashSet<E> get(E e1) {
 		return graph.get(e1);
 	}
