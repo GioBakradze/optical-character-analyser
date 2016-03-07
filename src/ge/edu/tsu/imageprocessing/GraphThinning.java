@@ -50,7 +50,6 @@ public class GraphThinning extends AlgorithmDecorator {
 			}
 		});
 
-		
 		for (Point p : nodesToRemove) {
 			imageGraph.removeNode(p);
 			setColorAt(image, (int) p.x, (int) p.y, COLOR_GRAY);
@@ -76,7 +75,8 @@ public class GraphThinning extends AlgorithmDecorator {
 
 	private int connectivityNumber(Graph<Point> graph, Point point) {
 
-		int edges[] = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		int edges[] = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0 };
 		double x = point.x;
 		double y = point.y;
 		int res = 0;
@@ -99,6 +99,40 @@ public class GraphThinning extends AlgorithmDecorator {
 
 		if (edges[0] == 1)
 			edges[8] = 1;
+
+		// these are extra edges
+		if (graph.edgeExists(new Point(x, y - 1), new Point(x - 1, y - 1)))
+			edges[13] = 1;
+
+		if (graph.edgeExists(new Point(x - 1, y), new Point(x - 1, y - 1)))
+			edges[14] = 1;
+
+		if (graph.edgeExists(new Point(x, y - 1), new Point(x + 1, y - 1)))
+			edges[15] = 1;
+
+		if (graph.edgeExists(new Point(x + 1, y), new Point(x + 1, y - 1)))
+			edges[16] = 1;
+
+		if (graph.edgeExists(new Point(x + 1, y), new Point(x + 1, y + 1)))
+			edges[17] = 1;
+
+		if (graph.edgeExists(new Point(x, y + 1), new Point(x + 1, y + 1)))
+			edges[18] = 1;
+
+		if (graph.edgeExists(new Point(x - 1, y), new Point(x - 1, y + 1)))
+			edges[19] = 1;
+
+		if (graph.edgeExists(new Point(x, y + 1), new Point(x - 1, y + 1)))
+			edges[20] = 1;
+
+		for (int i = 0; i < edges.length; i++)
+			res += edges[i];
+
+		if (res == edges.length)
+			return 0;
+
+		// calculate connectivity number
+		res = 0;
 
 		for (int i = 0; i <= 7; i++)
 			res += edges[i];
