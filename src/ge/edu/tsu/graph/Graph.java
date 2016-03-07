@@ -62,6 +62,16 @@ public class Graph<E> {
 	public HashSet<E> all() {
 		return nodes;
 	}
+	
+	public boolean edgeExists(E p1, E p2) {
+		if (!graph.containsKey(p1))
+			return false;
+		
+		if (!graph.get(p1).contains(p2))
+			return false;
+		
+		return true;
+	}
 
 	public boolean isConnected() {
 
