@@ -50,6 +50,7 @@ public class GraphThinning extends AlgorithmDecorator {
 			}
 		});
 
+		
 		for (Point p : nodesToRemove) {
 			imageGraph.removeNode(p);
 			setColorAt(image, (int) p.x, (int) p.y, COLOR_GRAY);
