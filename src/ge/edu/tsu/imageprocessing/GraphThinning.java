@@ -31,8 +31,56 @@ public class GraphThinning extends AlgorithmDecorator {
 				new Point(image.cols() - 1, image.rows() - 1));
 
 		// border nodes removal
-		ArrayList<Point> nodesToRemove = new ArrayList<Point>();
+		for (int k = 1; k <= 2; k++) {
 
+			// removeEdgesFromConcaveCorners(image, imageGraph, new double[][] {
+			// new double[] { -1, 0, -1, -1 },
+			// new double[] { -1, 0, 255, -1 },
+			// new double[] { -1, 0, 0, 0 },
+			// new double[] { 0, -1, -1, -1 } }, new Point(-1,-1), new Point(0,
+			// 0));
+
+			// removeEdgesFromConcaveCorners(image, imageGraph, new double[][] {
+			// new double[] { -1, -1, -1, -1 },
+			// new double[] { -1, -1, -1, -1 },
+			// new double[] { -1, -1, -1, -1 },
+			// new double[] { -1, -1, -1, -1 } });
+
+			ArrayList<Point> nodesToRemove = new ArrayList<Point>();
+
+			imageGraph.walk(new GraphListener<Point>() {
+				@Override
+				public void onSubtree(HashSet<Point> subtree) {
+				}
+
+				@Override
+				public void onNode(Point element, Point parent) {
+				}
+
+				@Override
+				public void onNode(Point e) {
+					if (connectivityNumber(imageGraph, e) == 1)
+						nodesToRemove.add(e);
+				}
+			});
+
+			runSubCycle(image, imageGraph, nodesToRemove, new Point(-1, 0));
+			runSubCycle(image, imageGraph, nodesToRemove, new Point(0, -1));
+			runSubCycle(image, imageGraph, nodesToRemove, new Point(1, 0));
+			runSubCycle(image, imageGraph, nodesToRemove, new Point(0, 1));
+
+			// for (Point p : nodesToRemove) {
+			// imageGraph.removeNode(p);
+			// setColorAt(image, (int) p.x, (int) p.y, COLOR_GRAY);
+			// }
+
+		}
+		return image;
+	}
+
+	private void removeEdgesFromConcaveCorners(Mat image,
+			Graph<Point> imageGraph, double[][] pattern, Point p1, Point p2) {
+		ArrayList<Point[]> edgesToRemove = new ArrayList<Point[]>();
 		imageGraph.walk(new GraphListener<Point>() {
 
 			@Override
@@ -45,32 +93,54 @@ public class GraphThinning extends AlgorithmDecorator {
 
 			@Override
 			public void onNode(Point e) {
-				if (connectivityNumber(imageGraph, e) == 1)
-					nodesToRemove.add(e);
+				try {
+					if (matchesPattern(image, (int) e.x, (int) e.y, pattern)) {
+						edgesToRemove.add(new Point[] {
+								new Point(e.x + p1.x, e.y + p1.y),
+								new Point(e.x + p2.x, e.y + p2.y) });
+						// setColorAt(image, (int) e.x, (int) e.y, COLOR_GRAY);
+						// setColorAt(image, (int) e.x - 1, (int) e.y,
+						// COLOR_GRAY);
+						// setColorAt(image, (int) e.x - 1, (int) e.y - 1,
+						// COLOR_GRAY);
+						// setColorAt(image, (int) e.x - 1, (int) e.y - 2,
+						// COLOR_GRAY);
+						// setColorAt(image, (int) e.x + 1, (int) e.y,
+						// COLOR_GRAY);
+						// setColorAt(image, (int) e.x - 2, (int) e.y + 1,
+						// COLOR_GRAY);
+					}
+				} catch (Exception exc) {
+				}
 			}
 		});
 
+		for (Point[] pointArr : edgesToRemove) {
+			imageGraph.removeEdge(pointArr[0], pointArr[1]);
+		}
+	}
+
+	private void runSubCycle(Mat imageMat, Graph<Point> imageGraph,
+			ArrayList<Point> nodesToRemove, Point sidePoint) {
+		ArrayList<Point> subcycleNodes = new ArrayList<Point>();
 		for (Point p : nodesToRemove) {
-			imageGraph.removeNode(p);
-			setColorAt(image, (int) p.x, (int) p.y, COLOR_GRAY);
+			if (imageGraph.nodeExists(p)
+					&& imageGraph.edgeExists(p, new Point(p.x + sidePoint.x,
+							p.y + sidePoint.y))
+					&& !imageGraph.edgeExists(p, new Point(p.x - sidePoint.x,
+							p.y - sidePoint.y))) {
+
+				if (imageGraph.get(p).size() != 1 && connectivityNumber(imageGraph, p) == 1) {
+					subcycleNodes.add(p);
+				}
+
+			}
 		}
 
-		// for (int i=2; i < image.rows() - 2; i++) {
-		// for (int j=2; j < image.cols() - 2; j++) {
-		// try {
-		// if (matchesPattern(image, j, i, new double[][] {
-		// new double[] {-1, 0, -1, -1},
-		// new double[] {-1, 0, 255, -1},
-		// new double[] {-1, 0, 0, 0},
-		// new double[] {0, -1, -1, -1}
-		// })) {
-		// setColorAt(image, j, i, COLOR_GRAY);
-		// }
-		// } catch(Exception e) {}
-		// }
-		// }
-
-		return image;
+		for (Point p : subcycleNodes) {
+			imageGraph.removeNode(p);
+			setColorAt(imageMat, (int) p.x, (int) p.y, COLOR_GRAY);
+		}
 	}
 
 	private int connectivityNumber(Graph<Point> graph, Point point) {

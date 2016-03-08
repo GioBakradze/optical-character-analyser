@@ -72,6 +72,10 @@ public class Graph<E> {
 		
 		return true;
 	}
+	
+	public boolean nodeExists(E p) {
+		return nodes.contains(p);
+	}
 
 	public boolean isConnected() {
 
