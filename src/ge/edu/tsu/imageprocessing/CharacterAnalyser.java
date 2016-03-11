@@ -1,6 +1,7 @@
 package ge.edu.tsu.imageprocessing;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -46,6 +47,14 @@ public class CharacterAnalyser {
 				boundingRect.add(r);
 			}
 		}
+		
+		boundingRect.sort(new Comparator<Rect>() {
+
+			@Override
+			public int compare(Rect o1, Rect o2) {
+				return o1.x - o2.x;
+			}
+		});
 
 		return boundingRect;
 	}
@@ -110,11 +119,14 @@ public class CharacterAnalyser {
 				Graph<Point> graph = AlgorithmDecorator.buildAreaGraph(localImage, word.get(i)[0], word.get(i)[1]);
 				Graph<Point> componentsGraph = new Graph<Point>();
 				HashMap<Integer, Integer> invariants = new HashMap<Integer, Integer>();
+				
+//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
 
 				graph.walkBFS(new GraphListener<Point>() {
 					@Override
 					public void onNode(Point e) {
 						if (graph.get(e).size() == 1) {
+							localImage.put((int) e.y, (int) e.x, new double[] {210});
 							if (invariants.containsKey(1))
 								invariants.put(1, invariants.get(1) + 1);
 							else

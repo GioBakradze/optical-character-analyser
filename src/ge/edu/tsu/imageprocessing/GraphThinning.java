@@ -14,6 +14,7 @@ import ge.edu.tsu.graph.GraphListener;
  * Implementation of Suzuki's graph based thinning for preserving topological
  * properties of symbols
  *
+ * TODO: implemented main part of algorithm
  */
 public class GraphThinning extends AlgorithmDecorator {
 
@@ -139,7 +140,7 @@ public class GraphThinning extends AlgorithmDecorator {
 
 		for (Point p : subcycleNodes) {
 			imageGraph.removeNode(p);
-			setColorAt(imageMat, (int) p.x, (int) p.y, COLOR_GRAY);
+			setColorAt(imageMat, (int) p.x, (int) p.y, COLOR_WHITE);
 		}
 	}
 

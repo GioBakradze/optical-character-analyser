@@ -18,7 +18,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("assets/r.jpg");
+		Mat image = Imgcodecs.imread("assets/abc-asomtavruli.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -28,7 +28,7 @@ public class Main {
 		image.copyTo(glyphsImage);
 		glyphsImage = (new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()))).execute(glyphsImage);
 		ArrayList<ArrayList<Point[]>> glyphs = CharacterAnalyser.isolateGlyphs(glyphsImage, boundingRects);
-
+		
 		// ###################
 		// analyse symbols
 //		Algorithm invariants = new SaltRemover(new ZhangSuenThinning(new GaussianAdaptiveThreshold(new GrayScale())));
@@ -37,6 +37,7 @@ public class Main {
 		
 		Algorithm alg = new GraphThinning(new GaussianAdaptiveThreshold(new GrayScale()));
 		newImage = alg.execute(image);
+		newImage = CharacterAnalyser.analyse(newImage, glyphs);
 		
 		if (newImage.dataAddr() == 0) {
 			System.err.println("unable to load image");
