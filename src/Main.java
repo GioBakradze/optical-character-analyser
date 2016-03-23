@@ -18,7 +18,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("assets/abc-asomtavruli.jpg");
+		Mat image = Imgcodecs.imread("assets/abc-nusxuri.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -35,7 +35,7 @@ public class Main {
 //		newImage = invariants.execute(image);
 //		newImage = CharacterAnalyser.analyse(newImage, glyphs);
 		
-		Algorithm alg = new GraphThinning(new GaussianAdaptiveThreshold(new GrayScale()));
+		Algorithm alg = new SimpleSaltRemover(new GraphThinning(new GaussianAdaptiveThreshold(new GrayScale())));
 		newImage = alg.execute(image);
 		newImage = CharacterAnalyser.analyse(newImage, glyphs);
 		

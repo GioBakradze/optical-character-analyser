@@ -14,7 +14,8 @@ import ge.edu.tsu.graph.GraphListener;
  * Implementation of Suzuki's graph based thinning for preserving topological
  * properties of symbols
  *
- * TODO: implemented main part of algorithm
+ * TODO: need to implement edge removal in the future
+ * at this point we can get away with only removing nodes
  */
 public class GraphThinning extends AlgorithmDecorator {
 

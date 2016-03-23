@@ -126,7 +126,7 @@ public class CharacterAnalyser {
 					@Override
 					public void onNode(Point e) {
 						if (graph.get(e).size() == 1) {
-							localImage.put((int) e.y, (int) e.x, new double[] {210});
+							// localImage.put((int) e.y, (int) e.x, new double[] {210});
 							if (invariants.containsKey(1))
 								invariants.put(1, invariants.get(1) + 1);
 							else
@@ -161,6 +161,14 @@ public class CharacterAnalyser {
 						
 						if (currentInvs <= 2)
 							return;
+						
+						
+//						if (currentInvs == 3) {
+//							for (Point p : subtree) {
+//								localImage.put((int)p.y, (int)p.x, new double[] {210});
+//							}
+//						}
+						
 						
 						if (invariants.containsKey(currentInvs))
 							invariants.put(currentInvs, invariants.get(currentInvs) + 1);
