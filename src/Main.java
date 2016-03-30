@@ -18,7 +18,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("assets/abc-nusxuri.jpg");
+		Mat image = Imgcodecs.imread("assets/abc-greek.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 

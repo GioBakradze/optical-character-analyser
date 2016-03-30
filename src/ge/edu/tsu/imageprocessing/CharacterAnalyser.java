@@ -52,7 +52,7 @@ public class CharacterAnalyser {
 
 			@Override
 			public int compare(Rect o1, Rect o2) {
-				return o1.x - o2.x;
+				return o1.x - o2.x + o1.y - o2.y;
 			}
 		});
 
@@ -112,15 +112,18 @@ public class CharacterAnalyser {
 		
 		// Georgian alphabet
 		int symbol = (int) 'ა';
-
+		HashMap<Integer, Integer> total = new HashMap<Integer, Integer>();
+		
+		int tmp = 0;
 		for (ArrayList<Point[]> word : glyphs) {
+			tmp++;
 			for (int i = 0; i < word.size(); i++) {
 
 				Graph<Point> graph = AlgorithmDecorator.buildAreaGraph(localImage, word.get(i)[0], word.get(i)[1]);
 				Graph<Point> componentsGraph = new Graph<Point>();
 				HashMap<Integer, Integer> invariants = new HashMap<Integer, Integer>();
 				
-//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
+				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
 
 				graph.walkBFS(new GraphListener<Point>() {
 					@Override
@@ -186,13 +189,24 @@ public class CharacterAnalyser {
 				});
 
 				if (invariants.size() > 0) {
-					System.out.print( (char) symbol + "   " + invariants);
+					System.out.print(  (symbol - (int) 'ა' + 1) + "   " + invariants);
 					System.out.println();
+					for (Integer inv : invariants.keySet()) {
+					    if (total.containsKey(inv)) {
+					    	total.put(inv, total.get(inv) + invariants.get(inv));
+					    } else {
+					    	total.put(inv, invariants.get(inv));
+					    }
+					}
 					symbol++;
 				}
 			}
+			if (tmp == 10) break;
 		}
-
+		
+		
+		System.out.println(total);
+		
 		return localImage;
 	}
 }
