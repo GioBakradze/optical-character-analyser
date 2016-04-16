@@ -18,7 +18,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("assets/abc-greek.jpg");
+		Mat image = Imgcodecs.imread("assets/abc-greek-clean.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -31,7 +31,7 @@ public class Main {
 		
 		// ###################
 		// analyse symbols
-//		Algorithm invariants = new SaltRemover(new ZhangSuenThinning(new GaussianAdaptiveThreshold(new GrayScale())));
+//		Algorithm invariants = new GaussianAdaptiveThreshold(new GrayScale());
 //		newImage = invariants.execute(image);
 //		newImage = CharacterAnalyser.analyse(newImage, glyphs);
 		

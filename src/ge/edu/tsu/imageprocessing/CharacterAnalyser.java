@@ -123,7 +123,7 @@ public class CharacterAnalyser {
 				Graph<Point> componentsGraph = new Graph<Point>();
 				HashMap<Integer, Integer> invariants = new HashMap<Integer, Integer>();
 				
-				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
+//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
 
 				graph.walkBFS(new GraphListener<Point>() {
 					@Override
@@ -136,12 +136,17 @@ public class CharacterAnalyser {
 								invariants.put(1, 1);
 						}
 					}
-
+					
+					// TODO: some problem on finding components
+					// detected on greek Omega
 					@Override
 					public void onNode(Point element, Point parent) {
 						if (parent != null) {
 							if (graph.get(element).size() > 2 || graph.get(parent).size() > 2) {
 								componentsGraph.put(element, parent);
+								
+//								localImage.put((int)element.y, (int)element.x, new double[] {210});
+//								localImage.put((int)parent.y, (int)parent.x, new double[] {210});
 							}
 						}
 					}
@@ -161,6 +166,7 @@ public class CharacterAnalyser {
 								currentInvs++;
 							}
 						}
+//						System.out.println("inv-> " + currentInvs);
 						
 						if (currentInvs <= 2)
 							return;
@@ -190,6 +196,7 @@ public class CharacterAnalyser {
 
 				if (invariants.size() > 0) {
 					System.out.print(  (symbol - (int) 'ა' + 1) + "   " + invariants);
+//					System.out.print(  (char) symbol + "   " + invariants);
 					System.out.println();
 					for (Integer inv : invariants.keySet()) {
 					    if (total.containsKey(inv)) {
@@ -201,7 +208,7 @@ public class CharacterAnalyser {
 					symbol++;
 				}
 			}
-			if (tmp == 10) break;
+//			if (tmp == 8) break;
 		}
 		
 		
