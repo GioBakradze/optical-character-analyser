@@ -7,7 +7,10 @@ import org.opencv.core.Rect;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import ge.edu.tsu.imageprocessing.*;
-
+// TODO: 
+// 1. we should use isolated symbols
+// 2. then for each symbol we apply detection algorithms
+// 3. each algorithm reduces array of possible symbols
 public class Main {
 
 	static {
