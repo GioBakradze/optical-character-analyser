@@ -10,6 +10,8 @@ import org.opencv.imgproc.Imgproc;
 
 import ge.edu.tsu.graph.Graph;
 import ge.edu.tsu.graph.GraphListener;
+import ge.edu.tsu.imageprocessing.detect.InvariantsDetector;
+import ge.edu.tsu.imageprocessing.detect.params.DetectorParams;
 
 public class CharacterAnalyser {
 
@@ -110,109 +112,20 @@ public class CharacterAnalyser {
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
 		
-		// Georgian alphabet
-		int symbol = (int) 'ა';
-		HashMap<Integer, Integer> total = new HashMap<Integer, Integer>();
-		
-		int tmp = 0;
 		for (ArrayList<Point[]> word : glyphs) {
-			tmp++;
 			for (int i = 0; i < word.size(); i++) {
-
-				Graph<Point> graph = AlgorithmDecorator.buildAreaGraph(localImage, word.get(i)[0], word.get(i)[1]);
-				Graph<Point> componentsGraph = new Graph<Point>();
-				HashMap<Integer, Integer> invariants = new HashMap<Integer, Integer>();
 				
 //				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
-
-				graph.walkBFS(new GraphListener<Point>() {
-					@Override
-					public void onNode(Point e) {
-						if (graph.get(e).size() == 1) {
-							// localImage.put((int) e.y, (int) e.x, new double[] {210});
-							if (invariants.containsKey(1))
-								invariants.put(1, invariants.get(1) + 1);
-							else
-								invariants.put(1, 1);
-						}
-					}
-					
-					// TODO: some problem on finding components
-					// detected on greek Omega
-					@Override
-					public void onNode(Point element, Point parent) {
-						if (parent != null) {
-							if (graph.get(element).size() > 2 || graph.get(parent).size() > 2) {
-								componentsGraph.put(element, parent);
-								
-//								localImage.put((int)element.y, (int)element.x, new double[] {210});
-//								localImage.put((int)parent.y, (int)parent.x, new double[] {210});
-							}
-						}
-					}
-
-					@Override
-					public void onSubtree(HashSet<Point> subtree) {
-					}
-				});
-
-				componentsGraph.walk(new GraphListener<Point>() {
-
-					@Override
-					public void onSubtree(HashSet<Point> subtree) {
-						int currentInvs = 0;
-						for (Point p : subtree) {
-							if (graph.get(p).size() <= 2) {
-								currentInvs++;
-							}
-						}
-//						System.out.println("inv-> " + currentInvs);
-						
-						if (currentInvs <= 2)
-							return;
-						
-						
-//						if (currentInvs == 3) {
-//							for (Point p : subtree) {
-//								localImage.put((int)p.y, (int)p.x, new double[] {210});
-//							}
-//						}
-						
-						
-						if (invariants.containsKey(currentInvs))
-							invariants.put(currentInvs, invariants.get(currentInvs) + 1);
-						else
-							invariants.put(currentInvs, 1);
-					}
-
-					@Override
-					public void onNode(Point element, Point parent) {
-					}
-
-					@Override
-					public void onNode(Point e) {
-					}
-				});
-
-				if (invariants.size() > 0) {
-					System.out.print(  (symbol - (int) 'ა' + 1) + "   " + invariants);
-//					System.out.print(  (char) symbol + "   " + invariants);
-					System.out.println();
-					for (Integer inv : invariants.keySet()) {
-					    if (total.containsKey(inv)) {
-					    	total.put(inv, total.get(inv) + invariants.get(inv));
-					    } else {
-					    	total.put(inv, invariants.get(inv));
-					    }
-					}
-					symbol++;
+				
+				// apply detectors
+				char[] symbols = new InvariantsDetector().detect(new DetectorParams(localImage, word.get(i)[0], word.get(i)[1]));
+				
+				if (symbols.length != 0) {
+					System.out.println(symbols);
 				}
+				
 			}
-//			if (tmp == 8) break;
 		}
-		
-		
-		System.out.println(total);
 		
 		return localImage;
 	}
