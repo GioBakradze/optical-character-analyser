@@ -12,6 +12,8 @@ import ge.edu.tsu.graph.Graph;
 import ge.edu.tsu.graph.GraphListener;
 import ge.edu.tsu.imageprocessing.detect.InvariantsDetector;
 import ge.edu.tsu.imageprocessing.detect.params.DetectorParams;
+import ge.edu.tsu.imageprocessing.detect.params.DetectorResult;
+import ge.edu.tsu.imageprocessing.detect.params.InvariantsDetectorResult;
 
 public class CharacterAnalyser {
 
@@ -49,7 +51,7 @@ public class CharacterAnalyser {
 				boundingRect.add(r);
 			}
 		}
-		
+
 		boundingRect.sort(new Comparator<Rect>() {
 
 			@Override
@@ -112,21 +114,28 @@ public class CharacterAnalyser {
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
 		
+		int c = 'ა';
+		
 		for (ArrayList<Point[]> word : glyphs) {
 			for (int i = 0; i < word.size(); i++) {
-				
-//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
-				
+
+				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
+				// new Scalar(150), 1);
+
 				// apply detectors
-				char[] symbols = new InvariantsDetector().detect(new DetectorParams(localImage, word.get(i)[0], word.get(i)[1]));
-				
-				if (symbols.length != 0) {
-					System.out.println(symbols);
+				DetectorResult res;
+				res = new InvariantsDetector().detect(new DetectorParams(localImage, word.get(i)[0], word.get(i)[1]));
+
+				if (res.symbols.length != 0) {
+					System.out.println((char) c + " > " + new String(res.symbols));
+					System.out.println( ((InvariantsDetectorResult) res).invariantsPositions );
+					System.out.println();
+					c++;
 				}
-				
+
 			}
 		}
-		
+
 		return localImage;
 	}
 }
