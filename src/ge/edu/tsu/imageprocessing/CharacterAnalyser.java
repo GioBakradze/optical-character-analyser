@@ -1,5 +1,11 @@
 package ge.edu.tsu.imageprocessing;
 
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -10,10 +16,12 @@ import org.opencv.imgproc.Imgproc;
 
 import ge.edu.tsu.graph.Graph;
 import ge.edu.tsu.graph.GraphListener;
+import ge.edu.tsu.imageprocessing.detect.InvariantPositionsDetector;
 import ge.edu.tsu.imageprocessing.detect.InvariantsDetector;
 import ge.edu.tsu.imageprocessing.detect.params.DetectorParams;
 import ge.edu.tsu.imageprocessing.detect.params.DetectorResult;
 import ge.edu.tsu.imageprocessing.detect.params.InvariantsDetectorResult;
+import ge.edu.tsu.imageprocessing.detect.params.InvariantsPositionDetectorParams;
 
 public class CharacterAnalyser {
 
@@ -113,9 +121,11 @@ public class CharacterAnalyser {
 	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs) {
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
-		
+
 		int c = 'ა';
-		
+
+		String output = "";
+
 		for (ArrayList<Point[]> word : glyphs) {
 			for (int i = 0; i < word.size(); i++) {
 
@@ -127,13 +137,40 @@ public class CharacterAnalyser {
 				res = new InvariantsDetector().detect(new DetectorParams(localImage, word.get(i)[0], word.get(i)[1]));
 
 				if (res.symbols.length != 0) {
-					System.out.println((char) c + " > " + new String(res.symbols));
-					System.out.println( ((InvariantsDetectorResult) res).invariantsPositions );
-					System.out.println();
-					c++;
+					if (res.symbols.length == 1) {
+						output += res.symbols[0];
+					} else {
+						DetectorResult res2 = new InvariantPositionsDetector()
+								.detect(new InvariantsPositionDetectorParams(localImage, word.get(i)[0], word.get(i)[1],
+										((InvariantsDetectorResult) res).invariantsPositions));
+
+						if (res2.symbols.length == 1) {
+							output += res2.symbols[0];
+						} else {
+							output += "(" + new String(res2.symbols.length == 0 ? res.symbols : res2.symbols) + ")";
+						}
+					}
+					// System.out.println((char) c + " > " + new
+					// String(res.symbols));
+					// c++;
 				}
 
 			}
+			output += " ";
+		}
+
+		try {
+			long name = System.currentTimeMillis();
+			Writer out = new BufferedWriter(
+					new OutputStreamWriter(new FileOutputStream("./outputs/" + name + ".txt"), "UTF8"));
+			out.append(output);
+			out.flush();
+			out.close();
+
+			// System.out.println(output);
+			System.out.println(name);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return localImage;

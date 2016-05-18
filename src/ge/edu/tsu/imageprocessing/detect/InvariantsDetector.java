@@ -110,7 +110,8 @@ public class InvariantsDetector implements Detector {
 		}
 	}
 
-	private void increaseCountInHashMap(HashMap<HashMap<Integer, Integer>, Integer> map, HashMap<Integer, Integer> obj) {
+	private void increaseCountInHashMap(HashMap<HashMap<Integer, Integer>, Integer> map,
+			HashMap<Integer, Integer> obj) {
 		if (map.containsKey(obj))
 			map.put(obj, map.get(obj) + 1);
 		else
@@ -180,10 +181,10 @@ public class InvariantsDetector implements Detector {
 					invariants.put(currentInvs, 1);
 
 				int pos = pointPosition(param.symbolStartPoint, param.symbolEndPoint, subtree.iterator().next());
-				
+
 				HashMap<Integer, Integer> invPosCouple = new HashMap<Integer, Integer>();
 				invPosCouple.put(pos, currentInvs);
-				
+
 				increaseCountInHashMap(invariantsPositions, invPosCouple);
 			}
 
@@ -197,9 +198,14 @@ public class InvariantsDetector implements Detector {
 		});
 
 		InvariantsDetectorResult res = new InvariantsDetectorResult();
-		res.symbols = symbolMap.get(invariants);
-		res.invariantsPositions = invariantsPositions;
 
+		if (symbolMap.containsKey(invariants)) {
+			res.symbols = symbolMap.get(invariants);
+		} else {
+			res.symbols = new char[] { '?' };
+		}
+
+		res.invariantsPositions = invariantsPositions;
 		return res;
 	}
 

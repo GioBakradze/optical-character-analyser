@@ -7,6 +7,7 @@ import org.opencv.core.Rect;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import ge.edu.tsu.imageprocessing.*;
+
 // TODO: 
 // 1. we should use isolated symbols
 // 2. then for each symbol we apply detection algorithms
@@ -21,7 +22,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("assets/abc.jpg");
+		Mat image = Imgcodecs.imread(args.length == 0 ? "assets/abc.jpg" : args[0]);
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -31,24 +32,23 @@ public class Main {
 		image.copyTo(glyphsImage);
 		glyphsImage = (new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()))).execute(glyphsImage);
 		ArrayList<ArrayList<Point[]>> glyphs = CharacterAnalyser.isolateGlyphs(glyphsImage, boundingRects);
-		
+
 		// ###################
 		// analyse symbols
-//		Algorithm invariants = new GaussianAdaptiveThreshold(new GrayScale());
-//		newImage = invariants.execute(image);
-//		newImage = CharacterAnalyser.analyse(newImage, glyphs);
-		
+		// Algorithm invariants = new GaussianAdaptiveThreshold(new
+		// GrayScale());
+		// newImage = invariants.execute(image);
+		// newImage = CharacterAnalyser.analyse(newImage, glyphs);
+
 		Algorithm alg = new SimpleSaltRemover(new GraphThinning(new GaussianAdaptiveThreshold(new GrayScale())));
 		newImage = alg.execute(image);
 		newImage = CharacterAnalyser.analyse(newImage, glyphs);
-		
-		if (newImage.dataAddr() == 0) {
-			System.err.println("unable to load image");
-		} else {
-			// System.out.println(newImage.channels());
 
-			ImageViewer imageViewer = new ImageViewer();
-			imageViewer.show(newImage, "Loaded Image");
-		}
+		// if (newImage.dataAddr() == 0) {
+		// System.err.println("unable to load image");
+		// } else {
+		// ImageViewer imageViewer = new ImageViewer();
+		// imageViewer.show(newImage, "Loaded Image");
+		// }
 	}
 }
