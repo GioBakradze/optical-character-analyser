@@ -22,7 +22,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread(args.length == 0 ? "assets/abc.jpg" : args[0]);
+		Mat image = Imgcodecs.imread(args.length == 0 ? "assets/generated.jpg" : args[0]);
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -40,15 +40,19 @@ public class Main {
 		// newImage = invariants.execute(image);
 		// newImage = CharacterAnalyser.analyse(newImage, glyphs);
 
-		Algorithm alg = new SimpleSaltRemover(new GraphThinning(new GaussianAdaptiveThreshold(new GrayScale())));
+		Algorithm alg = new SimpleSaltRemover(new GraphThinning(new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()))));
 		newImage = alg.execute(image);
 		newImage = CharacterAnalyser.analyse(newImage, glyphs);
 
-		// if (newImage.dataAddr() == 0) {
-		// System.err.println("unable to load image");
-		// } else {
-		// ImageViewer imageViewer = new ImageViewer();
-		// imageViewer.show(newImage, "Loaded Image");
-		// }
+		long name = System.currentTimeMillis();
+		Imgcodecs.imwrite("./outputs/" + name + ".jpg", newImage);
+		System.out.print(" " + name);
+
+//		if (newImage.dataAddr() == 0) {
+//			System.err.println("unable to load image");
+//		} else {
+//			ImageViewer imageViewer = new ImageViewer();
+//			imageViewer.show(newImage, "Loaded Image");
+//		}
 	}
 }

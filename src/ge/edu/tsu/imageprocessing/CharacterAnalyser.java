@@ -167,8 +167,8 @@ public class CharacterAnalyser {
 			out.flush();
 			out.close();
 
-			// System.out.println(output);
-			System.out.println(name);
+//			 System.out.println(output);
+			System.out.print(name);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
