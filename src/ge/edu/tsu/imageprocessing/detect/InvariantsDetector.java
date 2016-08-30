@@ -202,7 +202,10 @@ public class InvariantsDetector implements Detector {
 		});
 
 		InvariantsDetectorResult res = new InvariantsDetectorResult();
-
+		
+		if (invariants.size() != 0)
+			System.out.println(invariants);
+		
 		if (symbolMap.containsKey(invariants)) {
 			res.symbols = symbolMap.get(invariants);
 		} else {
