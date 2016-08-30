@@ -18,7 +18,10 @@ import ge.edu.tsu.graph.GraphListener;
  * at this point we can get away with only removing nodes
  */
 public class GraphThinning extends AlgorithmDecorator {
-
+	
+	ArrayList<Point> nodesToRemove;
+	Graph<Point> imageGraph;
+	
 	public GraphThinning(Algorithm algorithm) {
 		super(algorithm);
 	}
@@ -29,7 +32,7 @@ public class GraphThinning extends AlgorithmDecorator {
 		Mat image = new Mat();
 		newImage.copyTo(image);
 
-		Graph<Point> imageGraph = buildAreaGraph(image, new Point(0, 0),
+		imageGraph = buildAreaGraph(image, new Point(0, 0),
 				new Point(image.cols() - 1, image.rows() - 1));
 
 		// border nodes removal
@@ -48,7 +51,7 @@ public class GraphThinning extends AlgorithmDecorator {
 			// new double[] { -1, -1, -1, -1 },
 			// new double[] { -1, -1, -1, -1 } });
 
-			ArrayList<Point> nodesToRemove = new ArrayList<Point>();
+			nodesToRemove = new ArrayList<Point>();
 
 			imageGraph.walk(new GraphListener<Point>() {
 				@Override
@@ -78,48 +81,6 @@ public class GraphThinning extends AlgorithmDecorator {
 
 		}
 		return image;
-	}
-
-	private void removeEdgesFromConcaveCorners(Mat image,
-			Graph<Point> imageGraph, double[][] pattern, Point p1, Point p2) {
-		ArrayList<Point[]> edgesToRemove = new ArrayList<Point[]>();
-		imageGraph.walk(new GraphListener<Point>() {
-
-			@Override
-			public void onSubtree(HashSet<Point> subtree) {
-			}
-
-			@Override
-			public void onNode(Point element, Point parent) {
-			}
-
-			@Override
-			public void onNode(Point e) {
-				try {
-					if (matchesPattern(image, (int) e.x, (int) e.y, pattern)) {
-						edgesToRemove.add(new Point[] {
-								new Point(e.x + p1.x, e.y + p1.y),
-								new Point(e.x + p2.x, e.y + p2.y) });
-						// setColorAt(image, (int) e.x, (int) e.y, COLOR_GRAY);
-						// setColorAt(image, (int) e.x - 1, (int) e.y,
-						// COLOR_GRAY);
-						// setColorAt(image, (int) e.x - 1, (int) e.y - 1,
-						// COLOR_GRAY);
-						// setColorAt(image, (int) e.x - 1, (int) e.y - 2,
-						// COLOR_GRAY);
-						// setColorAt(image, (int) e.x + 1, (int) e.y,
-						// COLOR_GRAY);
-						// setColorAt(image, (int) e.x - 2, (int) e.y + 1,
-						// COLOR_GRAY);
-					}
-				} catch (Exception exc) {
-				}
-			}
-		});
-
-		for (Point[] pointArr : edgesToRemove) {
-			imageGraph.removeEdge(pointArr[0], pointArr[1]);
-		}
 	}
 
 	private void runSubCycle(Mat imageMat, Graph<Point> imageGraph,

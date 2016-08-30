@@ -16,7 +16,11 @@ import ge.edu.tsu.imageprocessing.detect.params.InvariantsDetectorResult;
 public class InvariantsDetector implements Detector {
 
 	private HashMap<HashMap<Integer, Integer>, char[]> symbolMap = new HashMap<HashMap<Integer, Integer>, char[]>();
-
+	HashMap<Integer, Integer> invariants;
+	Graph<Point> graph;
+	HashMap<HashMap<Integer, Integer>, Integer> invariantsPositions;
+	Graph<Point> componentsGraph;
+	
 	public InvariantsDetector() {
 		HashMap<Integer, Integer> key;
 
@@ -119,15 +123,15 @@ public class InvariantsDetector implements Detector {
 	}
 
 	@Override
-	public DetectorResult detect(DetectorParams param) {
+	public DetectorResult detect(final DetectorParams param) {
 
 		Mat localImage = param.localImage;
 
-		Graph<Point> graph = AlgorithmDecorator.buildAreaGraph(localImage, param.symbolStartPoint,
+		graph = AlgorithmDecorator.buildAreaGraph(localImage, param.symbolStartPoint,
 				param.symbolEndPoint);
-		Graph<Point> componentsGraph = new Graph<Point>();
-		HashMap<Integer, Integer> invariants = new HashMap<Integer, Integer>();
-		HashMap<HashMap<Integer, Integer>, Integer> invariantsPositions = new HashMap<HashMap<Integer, Integer>, Integer>();
+		componentsGraph = new Graph<Point>();
+		invariants = new HashMap<Integer, Integer>();
+		invariantsPositions = new HashMap<HashMap<Integer, Integer>, Integer>();
 
 		graph.walkBFS(new GraphListener<Point>() {
 			@Override

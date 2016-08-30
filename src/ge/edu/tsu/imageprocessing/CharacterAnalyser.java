@@ -1,21 +1,13 @@
 package ge.edu.tsu.imageprocessing;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
+
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
-import ge.edu.tsu.graph.Graph;
-import ge.edu.tsu.graph.GraphListener;
 import ge.edu.tsu.imageprocessing.detect.InvariantPositionsDetector;
 import ge.edu.tsu.imageprocessing.detect.InvariantsDetector;
 import ge.edu.tsu.imageprocessing.detect.params.DetectorParams;
@@ -160,15 +152,8 @@ public class CharacterAnalyser {
 		}
 
 		try {
-			long name = System.currentTimeMillis();
-			Writer out = new BufferedWriter(
-					new OutputStreamWriter(new FileOutputStream("./outputs/" + name + ".txt"), "UTF8"));
-			out.append(output);
-			out.flush();
-			out.close();
-
-//			 System.out.println(output);
-			System.out.print(name);
+			System.out.println(output);
+//			System.out.print(name);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

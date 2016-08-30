@@ -22,7 +22,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread(args.length == 0 ? "assets/generated.jpg" : args[0]);
+		Mat image = Imgcodecs.imread("assets/generated.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -44,15 +44,10 @@ public class Main {
 		newImage = alg.execute(image);
 		newImage = CharacterAnalyser.analyse(newImage, glyphs);
 
-		long name = System.currentTimeMillis();
-		Imgcodecs.imwrite("./outputs/" + name + ".jpg", newImage);
-		System.out.print(" " + name);
-
-//		if (newImage.dataAddr() == 0) {
-//			System.err.println("unable to load image");
-//		} else {
-//			ImageViewer imageViewer = new ImageViewer();
-//			imageViewer.show(newImage, "Loaded Image");
-//		}
+		if (newImage.dataAddr() == 0) {
+			System.err.println("unable to load image");
+		} else {
+			new ImageViewer().show(newImage, "Loaded Image");
+		}
 	}
 }
