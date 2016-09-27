@@ -5,6 +5,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import ge.edu.tsu.imageprocessing.*;
 
@@ -35,15 +36,15 @@ public class Main {
 
 		// ###################
 		// analyse symbols
-		// Algorithm invariants = new GaussianAdaptiveThreshold(new
-		// GrayScale());
-		// newImage = invariants.execute(image);
-		// newImage = CharacterAnalyser.analyse(newImage, glyphs);
 
-		Algorithm alg = new SimpleSaltRemover(new GraphThinning(new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()))));
+		Algorithm alg = new SimpleSaltRemover(
+				new GraphThinning(new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()))));
+		
 		newImage = alg.execute(image);
+		
 		newImage = CharacterAnalyser.analyse(newImage, glyphs);
-
+		
+		
 		if (newImage.dataAddr() == 0) {
 			System.err.println("unable to load image");
 		} else {

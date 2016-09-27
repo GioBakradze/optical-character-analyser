@@ -120,32 +120,43 @@ public class CharacterAnalyser {
 
 		for (ArrayList<Point[]> word : glyphs) {
 			for (int i = 0; i < word.size(); i++) {
-
-				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
-				// new Scalar(150), 1);
+				
+				
+				
+				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
+				
+				
+				Mat character = localImage.submat(
+					(int)word.get(i)[0].y, 
+					(int)word.get(i)[1].y, 
+					(int)word.get(i)[0].x, 
+					(int)word.get(i)[1].x
+				);
+				
+				System.out.println(character);
 
 				// apply detectors
-				DetectorResult res;
-				res = new InvariantsDetector().detect(new DetectorParams(localImage, word.get(i)[0], word.get(i)[1]));
-
-				if (res.symbols.length != 0) {
-					if (res.symbols.length == 1) {
-						output += res.symbols[0];
-					} else {
-						DetectorResult res2 = new InvariantPositionsDetector()
-								.detect(new InvariantsPositionDetectorParams(localImage, word.get(i)[0], word.get(i)[1],
-										((InvariantsDetectorResult) res).invariantsPositions));
-
-						if (res2.symbols.length == 1) {
-							output += res2.symbols[0];
-						} else {
-							output += "(" + new String(res2.symbols.length == 0 ? res.symbols : res2.symbols) + ")";
-						}
-					}
-					// System.out.println((char) c + " > " + new
-					// String(res.symbols));
-					// c++;
-				}
+//				DetectorResult res;
+//				res = new InvariantsDetector().detect(new DetectorParams(localImage, word.get(i)[0], word.get(i)[1]));
+//
+//				if (res.symbols.length != 0) {
+//					if (res.symbols.length == 1) {
+//						output += res.symbols[0];
+//					} else {
+//						DetectorResult res2 = new InvariantPositionsDetector()
+//								.detect(new InvariantsPositionDetectorParams(localImage, word.get(i)[0], word.get(i)[1],
+//										((InvariantsDetectorResult) res).invariantsPositions));
+//
+//						if (res2.symbols.length == 1) {
+//							output += res2.symbols[0];
+//						} else {
+//							output += "(" + new String(res2.symbols.length == 0 ? res.symbols : res2.symbols) + ")";
+//						}
+//					}
+//					// System.out.println((char) c + " > " + new
+//					// String(res.symbols));
+//					// c++;
+//				}
 
 			}
 			output += " ";
