@@ -3,17 +3,20 @@ package ge.edu.tsu.imageprocessing;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-
+import java.util.HashSet;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
+import ge.edu.tsu.graph.GraphListener;
 import ge.edu.tsu.imageprocessing.detect.InvariantPositionsDetector;
 import ge.edu.tsu.imageprocessing.detect.InvariantsDetector;
 import ge.edu.tsu.imageprocessing.detect.params.DetectorParams;
 import ge.edu.tsu.imageprocessing.detect.params.DetectorResult;
 import ge.edu.tsu.imageprocessing.detect.params.InvariantsDetectorResult;
 import ge.edu.tsu.imageprocessing.detect.params.InvariantsPositionDetectorParams;
+import ge.edu.tsu.imageprocessing.features.Invariants;
+import ge.edu.tsu.imageprocessing.features.WhiteComponents;
 
 public class CharacterAnalyser {
 
@@ -111,21 +114,27 @@ public class CharacterAnalyser {
 	}
 
 	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs) {
+		
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
 
+		final Mat experiment = localImage;
+		
 		int c = 'ა';
-
+		float average = 0;
 		String output = "";
+		
 
 		for (ArrayList<Point[]> word : glyphs) {
+			average = 0;
+			for (int i = 0; i < word.size(); i++) {
+				average += (int)word.get(i)[1].x - (int)word.get(i)[0].x;
+			}
+			average /= word.size();
+			
 			for (int i = 0; i < word.size(); i++) {
 				
-				
-				
-				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
-				
-				
+//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
 				Mat character = localImage.submat(
 					(int)word.get(i)[0].y, 
 					(int)word.get(i)[1].y, 
@@ -133,7 +142,31 @@ public class CharacterAnalyser {
 					(int)word.get(i)[1].x
 				);
 				
-				System.out.println(character);
+				if (character.cols() < (int) average)
+					continue;
+				
+//				AlgorithmDecorator.buildAreaGraphWhite(image, word.get(i)[0], word.get(i)[1])
+//				.walk(new GraphListener<Point>() {
+//					
+//					@Override
+//					public void onSubtree(HashSet<Point> subtree) {
+//						System.out.println("subtree");
+//						for (Point p : subtree) {
+//							experiment.put((int) p.y, (int) p.x, 200);
+//						}
+//					}
+//					
+//					@Override
+//					public void onNode(Point element, Point parent) {
+//					}
+//					
+//					@Override
+//					public void onNode(Point e) {
+//					}
+//				});;
+				
+				System.out.println((new Invariants()).extractFeature(character));
+				System.out.println((new WhiteComponents()).extractFeature(character));
 
 				// apply detectors
 //				DetectorResult res;

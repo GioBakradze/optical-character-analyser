@@ -71,6 +71,69 @@ public abstract class AlgorithmDecorator implements Algorithm {
 	public static boolean pointIsBlack(Mat image, int x, int y) {
 		return colorAt(image, x, y) == 0;
 	}
+	
+	public static boolean pointIsWhite(Mat image, int x, int y) {
+		return colorAt(image, x, y) == 255;
+	}
+	
+	public static Graph<Point> buildAreaGraphWhite(Mat image, Point start, Point end) {
+		Graph<Point> graph = new Graph<Point>();
+		int startY = (int) start.y;
+		int endY = (int) end.y;
+		int startX = (int) start.x;
+		int endX = (int) end.x;
+
+		for (int i = startY; i <= endY; i++) {
+			for (int j = startX; j <= endX; j++) {
+				if (pointIsWhite(image, j, i)) {
+					Point currentPoint = new Point(j, i);
+					graph.put(currentPoint);
+
+					// upper and lower borders
+					if ((i == startY || i == endY) && (j < endX)) {
+						if (pointIsWhite(image, j + 1, i))
+							graph.put(currentPoint, new Point(j + 1, i));
+					}
+
+					// left and right borders
+					if ((j == startX || j == endX) && i < endY) {
+						if (pointIsWhite(image, j, i + 1))
+							graph.put(currentPoint, new Point(j, i + 1));
+					}
+
+					// tricky parts
+					if (j == startX + 1 && i == startY) {
+						if (pointIsWhite(image, j - 1, i + 1))
+							graph.put(currentPoint, new Point(j - 1, i + 1));
+					}
+
+					if (j == endX - 1 && i == startY) {
+						if (pointIsWhite(image, j + 1, i + 1))
+							graph.put(currentPoint, new Point(j + 1, i + 1));
+					}
+
+					if (j == startX + 1 && i == endY) {
+						if (pointIsWhite(image, j - 1, i - 1))
+							graph.put(currentPoint, new Point(j - 1, i - 1));
+					}
+
+					if (j == endX - 1 && i == endY) {
+						if (pointIsWhite(image, j + 1, i - 1))
+							graph.put(currentPoint, new Point(j + 1, i - 1));
+					}
+
+					// center area
+					if (j > startX && j < endX && i > startY && i < endY) {
+						for (Point p : getWhiteNeighbours(image, j, i)) {
+							graph.put(currentPoint, p);
+						}
+					}
+				}
+			}
+		}
+
+		return graph;
+	}
 
 	public static Graph<Point> buildAreaGraph(Mat image, Point start, Point end) {
 		Graph<Point> graph = new Graph<Point>();
@@ -161,6 +224,36 @@ public abstract class AlgorithmDecorator implements Algorithm {
 
 		if (colorAt(image, x + 1, y + 1) == 0)
 			res.add(new Point(x + 1, y + 1));
+
+		return res;
+	}
+	
+	public static ArrayList<Point> getWhiteNeighbours(Mat image, int x, int y) {
+		ArrayList<Point> res = new ArrayList<Point>();
+
+//		if (colorAt(image, x - 1, y - 1) == 255)
+//			res.add(new Point(x - 1, y - 1));
+
+		if (colorAt(image, x, y - 1) == 255)
+			res.add(new Point(x, y - 1));
+
+//		if (colorAt(image, x + 1, y - 1) == 255)
+//			res.add(new Point(x + 1, y - 1));
+
+		if (colorAt(image, x - 1, y) == 255)
+			res.add(new Point(x - 1, y));
+
+		if (colorAt(image, x + 1, y) == 255)
+			res.add(new Point(x + 1, y));
+
+//		if (colorAt(image, x - 1, y + 1) == 255)
+//			res.add(new Point(x - 1, y + 1));
+
+		if (colorAt(image, x, y + 1) == 255)
+			res.add(new Point(x, y + 1));
+
+//		if (colorAt(image, x + 1, y + 1) == 255)
+//			res.add(new Point(x + 1, y + 1));
 
 		return res;
 	}

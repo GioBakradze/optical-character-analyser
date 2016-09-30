@@ -40,6 +40,8 @@ public class Main {
 		Algorithm alg = new SimpleSaltRemover(
 				new GraphThinning(new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()))));
 		
+//		Algorithm alg = new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()));
+		
 		newImage = alg.execute(image);
 		
 		newImage = CharacterAnalyser.analyse(newImage, glyphs);
