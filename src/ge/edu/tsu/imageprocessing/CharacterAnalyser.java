@@ -17,6 +17,9 @@ import ge.edu.tsu.imageprocessing.detect.params.InvariantsDetectorResult;
 import ge.edu.tsu.imageprocessing.detect.params.InvariantsPositionDetectorParams;
 import ge.edu.tsu.imageprocessing.features.Invariants;
 import ge.edu.tsu.imageprocessing.features.WhiteComponents;
+import ge.edu.tsu.imageprocessing.features.result.InvariantsResult;
+import ge.edu.tsu.imageprocessing.features.result.NumberSet;
+import ge.edu.tsu.imageprocessing.features.result.WhiteComponentsResult;
 
 public class CharacterAnalyser {
 
@@ -117,8 +120,6 @@ public class CharacterAnalyser {
 		
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
-
-		final Mat experiment = localImage;
 		
 		int c = 'ა';
 		float average = 0;
@@ -145,28 +146,12 @@ public class CharacterAnalyser {
 				if (character.cols() < (int) average)
 					continue;
 				
-//				AlgorithmDecorator.buildAreaGraphWhite(image, word.get(i)[0], word.get(i)[1])
-//				.walk(new GraphListener<Point>() {
-//					
-//					@Override
-//					public void onSubtree(HashSet<Point> subtree) {
-//						System.out.println("subtree");
-//						for (Point p : subtree) {
-//							experiment.put((int) p.y, (int) p.x, 200);
-//						}
-//					}
-//					
-//					@Override
-//					public void onNode(Point element, Point parent) {
-//					}
-//					
-//					@Override
-//					public void onNode(Point e) {
-//					}
-//				});;
+				InvariantsResult invs = (new Invariants()).extractFeature(character);
+				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
 				
-				System.out.println((new Invariants()).extractFeature(character));
-				System.out.println((new WhiteComponents()).extractFeature(character));
+				NumberSet set = new NumberSet(invs, whites);
+				System.out.println(set);
+				
 
 				// apply detectors
 //				DetectorResult res;
