@@ -1,6 +1,5 @@
 package ge.edu.tsu.imageprocessing;
 
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -17,6 +16,7 @@ import ge.edu.tsu.imageprocessing.detect.params.InvariantsDetectorResult;
 import ge.edu.tsu.imageprocessing.detect.params.InvariantsPositionDetectorParams;
 import ge.edu.tsu.imageprocessing.features.Invariants;
 import ge.edu.tsu.imageprocessing.features.WhiteComponents;
+import ge.edu.tsu.imageprocessing.features.base.NumberBase;
 import ge.edu.tsu.imageprocessing.features.result.InvariantsResult;
 import ge.edu.tsu.imageprocessing.features.result.NumberSet;
 import ge.edu.tsu.imageprocessing.features.result.WhiteComponentsResult;
@@ -117,76 +117,58 @@ public class CharacterAnalyser {
 	}
 
 	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs) {
-		
+
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
-		
-		int c = 'ა';
+
 		float average = 0;
-		String output = "";
+		NumberBase base = new NumberBase();
+//		int learningCharCode = (int) '0';
 		
-
-		for (ArrayList<Point[]> word : glyphs) {
-			average = 0;
-			for (int i = 0; i < word.size(); i++) {
-				average += (int)word.get(i)[1].x - (int)word.get(i)[0].x;
-			}
-			average /= word.size();
-			
-			for (int i = 0; i < word.size(); i++) {
-				
-//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
-				Mat character = localImage.submat(
-					(int)word.get(i)[0].y, 
-					(int)word.get(i)[1].y, 
-					(int)word.get(i)[0].x, 
-					(int)word.get(i)[1].x
-				);
-				
-				if (character.cols() < (int) average)
-					continue;
-				
-				InvariantsResult invs = (new Invariants()).extractFeature(character);
-				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
-				
-				NumberSet set = new NumberSet(invs, whites);
-				System.out.println(set);
-				
-
-				// apply detectors
-//				DetectorResult res;
-//				res = new InvariantsDetector().detect(new DetectorParams(localImage, word.get(i)[0], word.get(i)[1]));
-//
-//				if (res.symbols.length != 0) {
-//					if (res.symbols.length == 1) {
-//						output += res.symbols[0];
-//					} else {
-//						DetectorResult res2 = new InvariantPositionsDetector()
-//								.detect(new InvariantsPositionDetectorParams(localImage, word.get(i)[0], word.get(i)[1],
-//										((InvariantsDetectorResult) res).invariantsPositions));
-//
-//						if (res2.symbols.length == 1) {
-//							output += res2.symbols[0];
-//						} else {
-//							output += "(" + new String(res2.symbols.length == 0 ? res.symbols : res2.symbols) + ")";
-//						}
-//					}
-//					// System.out.println((char) c + " > " + new
-//					// String(res.symbols));
-//					// c++;
-//				}
-
-			}
-			output += " ";
-		}
-
 		try {
-			System.out.println(output);
-//			System.out.print(name);
+			base.restoreFrom("base/numbers.base");
+//			System.out.println(base);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+		for (ArrayList<Point[]> word : glyphs) {
+			average = 0;
+			for (int i = 0; i < word.size(); i++) {
+				average += (int) word.get(i)[1].x - (int) word.get(i)[0].x;
+			}
+			average /= word.size();
+
+			for (int i = 0; i < word.size(); i++) {
+
+//				 Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
+//				 new Scalar(150), 1);
+				 
+				Mat character = localImage.submat((int) word.get(i)[0].y, (int) word.get(i)[1].y,
+						(int) word.get(i)[0].x, (int) word.get(i)[1].x);
+
+				if (character.cols() < (int) average)
+					continue;
+
+				InvariantsResult invs = (new Invariants()).extractFeature(character);
+				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
+
+				NumberSet set = new NumberSet(invs, whites);
+				System.out.println(base.getClosest(set));
+//				System.out.println(set);
+
+//				 learningCharCode++;
+//				 System.out.println( (char) learningCharCode );
+//				 base.addTo( (char) learningCharCode , set);
+
+			}
+		}
+
+//		 try {
+//			 base.saveTo("base/numbers.base");
+//		 } catch (Exception e) {
+//		
+//		 }
 		return localImage;
 	}
 }

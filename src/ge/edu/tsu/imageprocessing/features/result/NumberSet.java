@@ -1,9 +1,11 @@
 package ge.edu.tsu.imageprocessing.features.result;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class NumberSet implements FeatureSet {
+public class NumberSet implements FeatureSet, Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private InvariantsResult invs;
 	private WhiteComponentsResult whites;
 
@@ -22,31 +24,12 @@ public class NumberSet implements FeatureSet {
 
 		// #########################
 		// whites feature
-		res = (otherSet.getWhites().count - whites.count);
+		res = (otherSet.getWhites().distance(whites));
 		res = res * res;
 
 		// #########################
 		// invariants feature
-		double invsDistance = 0;
-		int[] invariants1 = new int[11];
-		int[] invariants2 = new int[11];
-
-		for (int i = 0; i < invariants1.length; i++) {
-			invariants1[i] = invariants2[i] = 0;
-		}
-
-		for (Map.Entry<Integer, Integer> entry : invs.invariants.entrySet()) {
-			invariants1[entry.getKey()] = entry.getValue();
-		}
-		for (Map.Entry<Integer, Integer> entry : otherSet.getInvs().invariants.entrySet()) {
-			invariants2[entry.getKey()] = entry.getValue();
-		}
-
-		for (int i = 0; i < invariants1.length; i++) {
-			invsDistance += Math.pow(invariants1[i] - invariants2[i], 2);
-		}
-
-		res += invsDistance;
+		res += Math.pow(otherSet.getInvs().distance(invs), 2);
 
 		return Math.sqrt(res);
 	}

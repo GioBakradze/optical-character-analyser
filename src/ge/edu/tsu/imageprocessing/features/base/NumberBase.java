@@ -30,6 +30,8 @@ public class NumberBase implements FeatureBase<HashMap<Character, FeatureSet>>, 
 				smallest = tmpDistance;
 			}
 		}
+		
+		System.out.print(smallest + "    ");
 
 		return c;
 	}
@@ -56,7 +58,7 @@ public class NumberBase implements FeatureBase<HashMap<Character, FeatureSet>>, 
 
 	@Override
 	public void restoreFrom(String file) throws IOException, ClassNotFoundException {
-		FileInputStream fileIn = new FileInputStream("/tmp/employee.ser");
+		FileInputStream fileIn = new FileInputStream(file);
 		ObjectInputStream in = new ObjectInputStream(fileIn);
 		NumberBase e = (NumberBase) in.readObject();
 		in.close();
@@ -68,6 +70,11 @@ public class NumberBase implements FeatureBase<HashMap<Character, FeatureSet>>, 
 	@Override
 	public HashMap<Character, FeatureSet> getBase() {
 		return base;
+	}
+	
+	@Override
+	public String toString() {
+		return base.toString();
 	}
 
 }
