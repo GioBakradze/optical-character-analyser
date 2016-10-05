@@ -3,13 +3,13 @@ package ge.edu.tsu.imageprocessing.features.result;
 import java.io.Serializable;
 import java.util.Map;
 
-public class NumberSet implements FeatureSet, Serializable {
+public class SimpleSet implements FeatureSet, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private InvariantsResult invs;
 	private WhiteComponentsResult whites;
 
-	public NumberSet(InvariantsResult invs, WhiteComponentsResult whites) {
+	public SimpleSet(InvariantsResult invs, WhiteComponentsResult whites) {
 		super();
 
 		this.invs = invs;
@@ -18,7 +18,7 @@ public class NumberSet implements FeatureSet, Serializable {
 
 	@Override
 	public Double distance(FeatureSet set) {
-		NumberSet otherSet = (NumberSet) set;
+		SimpleSet otherSet = (SimpleSet) set;
 
 		double res = 0;
 

@@ -16,9 +16,9 @@ import ge.edu.tsu.imageprocessing.detect.params.InvariantsDetectorResult;
 import ge.edu.tsu.imageprocessing.detect.params.InvariantsPositionDetectorParams;
 import ge.edu.tsu.imageprocessing.features.Invariants;
 import ge.edu.tsu.imageprocessing.features.WhiteComponents;
-import ge.edu.tsu.imageprocessing.features.base.NumberBase;
+import ge.edu.tsu.imageprocessing.features.base.SimpleBase;
 import ge.edu.tsu.imageprocessing.features.result.InvariantsResult;
-import ge.edu.tsu.imageprocessing.features.result.NumberSet;
+import ge.edu.tsu.imageprocessing.features.result.SimpleSet;
 import ge.edu.tsu.imageprocessing.features.result.WhiteComponentsResult;
 
 public class CharacterAnalyser {
@@ -122,12 +122,11 @@ public class CharacterAnalyser {
 		image.copyTo(localImage);
 
 		float average = 0;
-		NumberBase base = new NumberBase();
-//		int learningCharCode = (int) '0';
-		
+		SimpleBase base = new SimpleBase();
+		// int learningCharCode = (int) '0';
+
 		try {
 			base.restoreFrom("base/numbers.base");
-//			System.out.println(base);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -141,34 +140,33 @@ public class CharacterAnalyser {
 
 			for (int i = 0; i < word.size(); i++) {
 
-//				 Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
-//				 new Scalar(150), 1);
-				 
 				Mat character = localImage.submat((int) word.get(i)[0].y, (int) word.get(i)[1].y,
 						(int) word.get(i)[0].x, (int) word.get(i)[1].x);
 
 				if (character.cols() < (int) average)
 					continue;
 
+//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
+
 				InvariantsResult invs = (new Invariants()).extractFeature(character);
 				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
 
-				NumberSet set = new NumberSet(invs, whites);
+				SimpleSet set = new SimpleSet(invs, whites);
 				System.out.println(base.getClosest(set));
 //				System.out.println(set);
 
-//				 learningCharCode++;
-//				 System.out.println( (char) learningCharCode );
-//				 base.addTo( (char) learningCharCode , set);
+				// learningCharCode++;
+				// System.out.println( (char) learningCharCode );
+				// base.addTo( (char) learningCharCode , set);
 
 			}
 		}
 
-//		 try {
-//			 base.saveTo("base/numbers.base");
-//		 } catch (Exception e) {
-//		
-//		 }
+		// try {
+		// base.saveTo("base/numbers.base");
+		// } catch (Exception e) {
+		//
+		// }
 		return localImage;
 	}
 }

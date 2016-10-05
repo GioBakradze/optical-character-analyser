@@ -12,7 +12,7 @@ import java.util.Map;
 
 import ge.edu.tsu.imageprocessing.features.result.FeatureSet;
 
-public class NumberBase implements FeatureBase<HashMap<Character, FeatureSet>>, Serializable {
+public class SimpleBase implements FeatureBase<HashMap<Character, FeatureSet>>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private HashMap<Character, FeatureSet> base = new HashMap<>();
@@ -60,7 +60,7 @@ public class NumberBase implements FeatureBase<HashMap<Character, FeatureSet>>, 
 	public void restoreFrom(String file) throws IOException, ClassNotFoundException {
 		FileInputStream fileIn = new FileInputStream(file);
 		ObjectInputStream in = new ObjectInputStream(fileIn);
-		NumberBase e = (NumberBase) in.readObject();
+		SimpleBase e = (SimpleBase) in.readObject();
 		in.close();
 		fileIn.close();
 		this.base = e.getBase();
