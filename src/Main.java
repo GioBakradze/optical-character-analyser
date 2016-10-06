@@ -23,7 +23,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("assets/numbers_20.jpg");
+		Mat image = Imgcodecs.imread("learn/sylfaen-50-test-1.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -39,14 +39,15 @@ public class Main {
 
 		Algorithm alg = new SimpleSaltRemover(
 				new GraphThinning(new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()))));
-		
-//		Algorithm alg = new GaussianAdaptiveThreshold(new GaussianBlur(new GrayScale()));
-		
+
+		// Algorithm alg = new GaussianAdaptiveThreshold(new GaussianBlur(new
+		// GrayScale()));
+
 		newImage = alg.execute(image);
-		
+
 		newImage = CharacterAnalyser.analyse(newImage, glyphs);
-		
-		
+		// newImage = CharacterAnalyser.learn(newImage, glyphs);
+
 		if (newImage.dataAddr() == 0) {
 			System.err.println("unable to load image");
 		} else {

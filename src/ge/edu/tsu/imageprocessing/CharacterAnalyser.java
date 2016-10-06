@@ -116,6 +116,52 @@ public class CharacterAnalyser {
 		return res;
 	}
 
+	public static Mat learn(Mat image, ArrayList<ArrayList<Point[]>> glyphs) {
+
+		Mat localImage = new Mat();
+		image.copyTo(localImage);
+
+		float average = 0;
+		SimpleBase base = new SimpleBase();
+		int learningCharCode = (int) 'ა';
+
+		for (ArrayList<Point[]> word : glyphs) {
+			average = 0;
+			for (int i = 0; i < word.size(); i++) {
+				average += (int) word.get(i)[1].x - (int) word.get(i)[0].x;
+			}
+			average /= word.size();
+
+			for (int i = 0; i < word.size(); i++) {
+
+				Mat character = localImage.submat((int) word.get(i)[0].y, (int) word.get(i)[1].y,
+						(int) word.get(i)[0].x, (int) word.get(i)[1].x);
+
+				if (character.cols() < (int) average)
+					continue;
+
+//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
+
+				InvariantsResult invs = (new Invariants()).extractFeature(character);
+				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
+				SimpleSet set = new SimpleSet(invs, whites);
+
+				System.out.println((char) learningCharCode);
+				System.out.println(set);
+
+				base.addTo((char) learningCharCode, set);
+				learningCharCode++;
+			}
+		}
+
+		try {
+			base.saveTo("base/characters.base");
+		} catch (Exception e) {
+
+		}
+		return localImage;
+	}
+
 	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs) {
 
 		Mat localImage = new Mat();
@@ -123,10 +169,9 @@ public class CharacterAnalyser {
 
 		float average = 0;
 		SimpleBase base = new SimpleBase();
-		// int learningCharCode = (int) '0';
 
 		try {
-			base.restoreFrom("base/numbers.base");
+			base.restoreFrom("base/characters.base");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -155,18 +200,9 @@ public class CharacterAnalyser {
 				System.out.println(base.getClosest(set));
 //				System.out.println(set);
 
-				// learningCharCode++;
-				// System.out.println( (char) learningCharCode );
-				// base.addTo( (char) learningCharCode , set);
-
 			}
 		}
 
-		// try {
-		// base.saveTo("base/numbers.base");
-		// } catch (Exception e) {
-		//
-		// }
 		return localImage;
 	}
 }
