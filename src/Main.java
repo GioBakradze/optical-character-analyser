@@ -23,7 +23,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("learn/sylfaen-50-test-1.jpg");
+		Mat image = Imgcodecs.imread("learn/sylfaen-50.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -45,8 +45,9 @@ public class Main {
 
 		newImage = alg.execute(image);
 
-		newImage = CharacterAnalyser.analyse(newImage, glyphs);
-		// newImage = CharacterAnalyser.learn(newImage, glyphs);
+		newImage = CharacterAnalyser.analyse(newImage, glyphs, "base/characters.base");
+		// newImage = CharacterAnalyser.learn(newImage, glyphs,
+		// "base/sylfaen-30.base");
 
 		if (newImage.dataAddr() == 0) {
 			System.err.println("unable to load image");

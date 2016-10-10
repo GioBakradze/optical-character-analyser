@@ -116,7 +116,7 @@ public class CharacterAnalyser {
 		return res;
 	}
 
-	public static Mat learn(Mat image, ArrayList<ArrayList<Point[]>> glyphs) {
+	public static Mat learn(Mat image, ArrayList<ArrayList<Point[]>> glyphs, String file) {
 
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
@@ -140,7 +140,8 @@ public class CharacterAnalyser {
 				if (character.cols() < (int) average)
 					continue;
 
-//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
+				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
+				// new Scalar(150), 1);
 
 				InvariantsResult invs = (new Invariants()).extractFeature(character);
 				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
@@ -155,14 +156,14 @@ public class CharacterAnalyser {
 		}
 
 		try {
-			base.saveTo("base/characters.base");
+			base.saveTo(file);
 		} catch (Exception e) {
 
 		}
 		return localImage;
 	}
 
-	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs) {
+	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs, String file) {
 
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
@@ -171,7 +172,7 @@ public class CharacterAnalyser {
 		SimpleBase base = new SimpleBase();
 
 		try {
-			base.restoreFrom("base/characters.base");
+			base.restoreFrom(file);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -191,14 +192,15 @@ public class CharacterAnalyser {
 				if (character.cols() < (int) average)
 					continue;
 
-//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
+				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
+				// new Scalar(150), 1);
 
 				InvariantsResult invs = (new Invariants()).extractFeature(character);
 				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
 
 				SimpleSet set = new SimpleSet(invs, whites);
-				System.out.println(base.getClosest(set));
-//				System.out.println(set);
+				System.out.print(base.getClosest(set));
+				System.out.println("     " + base.getLastSmallestDistance());
 
 			}
 		}

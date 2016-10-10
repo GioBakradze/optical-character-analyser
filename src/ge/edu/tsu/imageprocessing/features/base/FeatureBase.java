@@ -18,5 +18,7 @@ public interface FeatureBase<T> {
 	public void restoreFrom(String file) throws IOException, ClassNotFoundException;
 
 	public T getBase();
+	
+	public Double getLastSmallestDistance();
 
 }

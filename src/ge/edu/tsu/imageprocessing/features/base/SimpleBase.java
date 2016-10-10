@@ -16,6 +16,7 @@ public class SimpleBase implements FeatureBase<HashMap<Character, FeatureSet>>, 
 
 	private static final long serialVersionUID = 1L;
 	private HashMap<Character, FeatureSet> base = new HashMap<>();
+	private Double lastSmallestDistance;
 
 	@Override
 	public Character getClosest(FeatureSet set) {
@@ -30,8 +31,8 @@ public class SimpleBase implements FeatureBase<HashMap<Character, FeatureSet>>, 
 				smallest = tmpDistance;
 			}
 		}
-		
-		System.out.print(smallest + "    ");
+
+		lastSmallestDistance = smallest;
 
 		return c;
 	}
@@ -71,10 +72,15 @@ public class SimpleBase implements FeatureBase<HashMap<Character, FeatureSet>>, 
 	public HashMap<Character, FeatureSet> getBase() {
 		return base;
 	}
-	
+
 	@Override
 	public String toString() {
 		return base.toString();
+	}
+
+	@Override
+	public Double getLastSmallestDistance() {
+		return lastSmallestDistance;
 	}
 
 }
