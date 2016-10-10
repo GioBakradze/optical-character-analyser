@@ -2,18 +2,10 @@ package ge.edu.tsu.imageprocessing;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
-import ge.edu.tsu.graph.GraphListener;
-import ge.edu.tsu.imageprocessing.detect.InvariantPositionsDetector;
-import ge.edu.tsu.imageprocessing.detect.InvariantsDetector;
-import ge.edu.tsu.imageprocessing.detect.params.DetectorParams;
-import ge.edu.tsu.imageprocessing.detect.params.DetectorResult;
-import ge.edu.tsu.imageprocessing.detect.params.InvariantsDetectorResult;
-import ge.edu.tsu.imageprocessing.detect.params.InvariantsPositionDetectorParams;
 import ge.edu.tsu.imageprocessing.features.Invariants;
 import ge.edu.tsu.imageprocessing.features.WhiteComponents;
 import ge.edu.tsu.imageprocessing.features.base.SimpleBase;
