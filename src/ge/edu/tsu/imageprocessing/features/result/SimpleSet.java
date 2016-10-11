@@ -1,7 +1,6 @@
 package ge.edu.tsu.imageprocessing.features.result;
 
 import java.io.Serializable;
-import java.util.Map;
 
 public class SimpleSet implements FeatureSet, Serializable {
 

@@ -193,6 +193,8 @@ public class CharacterAnalyser {
 				SimpleSet set = new SimpleSet(invs, whites);
 				System.out.print(base.getClosest(set));
 				System.out.println("     " + base.getLastSmallestDistance());
+				System.out.println(set);
+				System.out.println();
 
 			}
 		}
