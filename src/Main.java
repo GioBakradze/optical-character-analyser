@@ -9,10 +9,6 @@ import org.opencv.imgproc.Imgproc;
 
 import ge.edu.tsu.imageprocessing.*;
 
-// TODO: 
-// 1. we should use isolated symbols
-// 2. then for each symbol we apply detection algorithms
-// 3. each algorithm reduces array of possible symbols
 public class Main {
 
 	static {
@@ -47,7 +43,7 @@ public class Main {
 
 		newImage = CharacterAnalyser.analyse(newImage, glyphs, "base/characters.base");
 		// newImage = CharacterAnalyser.learn(newImage, glyphs,
-		// "base/sylfaen-30.base");
+		// "base/characters.base");
 
 		if (newImage.dataAddr() == 0) {
 			System.err.println("unable to load image");

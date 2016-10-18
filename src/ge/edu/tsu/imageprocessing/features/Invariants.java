@@ -52,7 +52,7 @@ public class Invariants implements CharacterFeature<InvariantsResult> {
 	}
 	
 	@Override
-	public InvariantsResult extractFeature(Mat image) {
+	public InvariantsResult extractFeature(Mat image, CharacterMetadata metadata) {
 		
 		Mat featureImage = new Mat();
 		image.copyTo(featureImage);

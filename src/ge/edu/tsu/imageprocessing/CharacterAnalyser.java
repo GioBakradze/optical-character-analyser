@@ -6,9 +6,11 @@ import java.util.Comparator;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
+import ge.edu.tsu.imageprocessing.features.Height;
 import ge.edu.tsu.imageprocessing.features.Invariants;
 import ge.edu.tsu.imageprocessing.features.WhiteComponents;
 import ge.edu.tsu.imageprocessing.features.base.SimpleBase;
+import ge.edu.tsu.imageprocessing.features.result.HeightResult;
 import ge.edu.tsu.imageprocessing.features.result.InvariantsResult;
 import ge.edu.tsu.imageprocessing.features.result.SimpleSet;
 import ge.edu.tsu.imageprocessing.features.result.WhiteComponentsResult;
@@ -135,9 +137,10 @@ public class CharacterAnalyser {
 				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
 				// new Scalar(150), 1);
 
-				InvariantsResult invs = (new Invariants()).extractFeature(character);
-				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
-				SimpleSet set = new SimpleSet(invs, whites);
+				InvariantsResult invs = (new Invariants()).extractFeature(character, null);
+				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character, null);
+				HeightResult height = (new Height()).extractFeature(character, null);
+				SimpleSet set = new SimpleSet(invs, whites, height);
 
 				System.out.println((char) learningCharCode);
 				System.out.println(set);
@@ -184,19 +187,22 @@ public class CharacterAnalyser {
 				if (character.cols() < (int) average)
 					continue;
 
-				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
-				// new Scalar(150), 1);
+//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
 
-				InvariantsResult invs = (new Invariants()).extractFeature(character);
-				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character);
-
-				SimpleSet set = new SimpleSet(invs, whites);
+				InvariantsResult invs = (new Invariants()).extractFeature(character, null);
+				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character, null);
+				HeightResult height = (new Height()).extractFeature(character, null);
+				
+				SimpleSet set = new SimpleSet(invs, whites, height);
+				
 				System.out.print(base.getClosest(set));
 				System.out.println("     " + base.getLastSmallestDistance());
-				System.out.println(set);
+//				System.out.println(set);
 				System.out.println();
 
 			}
+
+			// System.out.print(" ");
 		}
 
 		return localImage;

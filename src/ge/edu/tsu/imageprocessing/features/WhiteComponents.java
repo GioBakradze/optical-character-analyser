@@ -17,7 +17,7 @@ public class WhiteComponents implements CharacterFeature<WhiteComponentsResult> 
 	private Integer res = 0;
 
 	@Override
-	public WhiteComponentsResult extractFeature(Mat image) {
+	public WhiteComponentsResult extractFeature(Mat image, CharacterMetadata metadata) {
 		Mat featureImage = new Mat();
 		// image.copyTo(featureImage);
 		Core.copyMakeBorder(image, featureImage, 3, 3, 3, 3, Core.BORDER_CONSTANT, new Scalar(255, 255, 255));
