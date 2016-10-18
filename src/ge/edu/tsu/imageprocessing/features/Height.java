@@ -10,7 +10,7 @@ public class Height implements CharacterFeature<HeightResult> {
 	public HeightResult extractFeature(Mat image, CharacterMetadata metadata) {
 
 		HeightResult res = new HeightResult();
-		res.height = (double) image.rows();
+		res.height = (double) image.rows() / (double) image.cols();
 
 		return res;
 	}
