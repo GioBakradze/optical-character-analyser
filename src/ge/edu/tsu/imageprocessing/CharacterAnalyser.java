@@ -6,12 +6,15 @@ import java.util.Comparator;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
+import ge.edu.tsu.imageprocessing.features.BasicMetadata;
 import ge.edu.tsu.imageprocessing.features.Height;
 import ge.edu.tsu.imageprocessing.features.Invariants;
+import ge.edu.tsu.imageprocessing.features.Position;
 import ge.edu.tsu.imageprocessing.features.WhiteComponents;
 import ge.edu.tsu.imageprocessing.features.base.SimpleBase;
 import ge.edu.tsu.imageprocessing.features.result.HeightResult;
 import ge.edu.tsu.imageprocessing.features.result.InvariantsResult;
+import ge.edu.tsu.imageprocessing.features.result.PositionResult;
 import ge.edu.tsu.imageprocessing.features.result.SimpleSet;
 import ge.edu.tsu.imageprocessing.features.result.WhiteComponentsResult;
 
@@ -110,7 +113,36 @@ public class CharacterAnalyser {
 		return res;
 	}
 
+	private static int findLineTop(Mat image) {
+		for (int i = 0; i < image.rows(); i++) {
+			for (int j = 0; j < image.row(i).cols(); j++) {
+				if (AlgorithmDecorator.pointIsBlack(image, j, i)) {
+					return i;
+				}
+			}
+		}
+		return 0;
+	}
+
+	private static int findLineBottom(Mat image) {
+		for (int i = image.rows() - 1; i >= 0; i--) {
+			for (int j = 0; j < image.row(i).cols(); j++) {
+				if (AlgorithmDecorator.pointIsBlack(image, j, i)) {
+					return i;
+				}
+			}
+		}
+		return 0;
+	}
+
 	public static Mat learn(Mat image, ArrayList<ArrayList<Point[]>> glyphs, String file) {
+
+		int lineTop = findLineTop(image);
+		int lineBottom = findLineBottom(image);
+		// Imgproc.line(image, new Point(0, lineTop), new Point(500, lineTop),
+		// new Scalar(150));
+		// Imgproc.line(image, new Point(0, lineBottom), new Point(500,
+		// lineBottom), new Scalar(150));
 
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
@@ -137,10 +169,20 @@ public class CharacterAnalyser {
 				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
 				// new Scalar(150), 1);
 
+				// metadata
+				BasicMetadata metadata = new BasicMetadata();
+				metadata.lineTop = lineTop;
+				metadata.lineBottom = lineBottom;
+				metadata.characterTop = (int) word.get(i)[0].y;
+
+				// features
 				InvariantsResult invs = (new Invariants()).extractFeature(character, null);
 				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character, null);
 				HeightResult height = (new Height()).extractFeature(character, null);
-				SimpleSet set = new SimpleSet(invs, whites, height);
+				PositionResult position = (new Position()).extractFeature(character, metadata);
+
+				// set
+				SimpleSet set = new SimpleSet(invs, whites, height, position);
 
 				System.out.println((char) learningCharCode);
 				System.out.println(set);
@@ -159,6 +201,9 @@ public class CharacterAnalyser {
 	}
 
 	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs, String file) {
+
+		int lineTop = findLineTop(image);
+		int lineBottom = findLineBottom(image);
 
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
@@ -187,17 +232,27 @@ public class CharacterAnalyser {
 				if (character.cols() < (int) average)
 					continue;
 
-//				Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1], new Scalar(150), 1);
+				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
+				// new Scalar(150), 1);
 
+				// metadata
+				BasicMetadata metadata = new BasicMetadata();
+				metadata.lineTop = lineTop;
+				metadata.lineBottom = lineBottom;
+				metadata.characterTop = (int) word.get(i)[0].y;
+
+				// features
 				InvariantsResult invs = (new Invariants()).extractFeature(character, null);
 				WhiteComponentsResult whites = (new WhiteComponents()).extractFeature(character, null);
 				HeightResult height = (new Height()).extractFeature(character, null);
-				
-				SimpleSet set = new SimpleSet(invs, whites, height);
-				
+				PositionResult position = (new Position()).extractFeature(character, metadata);
+
+				// feature set
+				SimpleSet set = new SimpleSet(invs, whites, height, position);
+
 				System.out.print(base.getClosest(set));
 				System.out.println("     " + base.getLastSmallestDistance());
-//				System.out.println(set);
+				// System.out.println(set);
 				System.out.println();
 
 			}

@@ -8,13 +8,16 @@ public class SimpleSet implements FeatureSet, Serializable {
 	private InvariantsResult invs;
 	private WhiteComponentsResult whites;
 	private HeightResult height;
+	private PositionResult position;
 
-	public SimpleSet(InvariantsResult invs, WhiteComponentsResult whites, HeightResult height) {
+	public SimpleSet(InvariantsResult invs, WhiteComponentsResult whites, HeightResult height,
+			PositionResult position) {
 		super();
 
 		this.invs = invs;
 		this.whites = whites;
 		this.height = height;
+		this.position = position;
 	}
 
 	@Override
@@ -36,6 +39,10 @@ public class SimpleSet implements FeatureSet, Serializable {
 		// heights feature
 		res += Math.pow(otherSet.getHeight().distance(height), 2);
 
+		// #########################
+		// positions feature
+		res += Math.pow(otherSet.getPosition().distance(position), 2);
+
 		return Math.sqrt(res);
 	}
 
@@ -51,9 +58,14 @@ public class SimpleSet implements FeatureSet, Serializable {
 		return height;
 	}
 
+	public PositionResult getPosition() {
+		return position;
+	}
+
 	@Override
 	public String toString() {
-		return invs.toString() + "\n" + whites.toString() + '\n' + height.toString();
+		return invs.toString() + "\nwhites:" + whites.toString() + "\nheight:" + height.toString() + "\nposition:"
+				+ position.toString();
 	}
 
 }
