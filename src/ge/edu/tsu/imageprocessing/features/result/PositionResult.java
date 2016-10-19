@@ -4,9 +4,10 @@ import java.io.Serializable;
 
 public class PositionResult implements FeatureResult, Serializable {
 
-	public int position;
+	private static final long serialVersionUID = 1L;
+	public double position;
 
-	public PositionResult(int position) {
+	public PositionResult(double position) {
 		this.position = position;
 	}
 

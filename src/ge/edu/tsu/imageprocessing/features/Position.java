@@ -9,7 +9,8 @@ public class Position implements CharacterFeature<PositionResult> {
 	@Override
 	public PositionResult extractFeature(Mat image, CharacterMetadata metadata) {
 		BasicMetadata meta = ((BasicMetadata) metadata);
-		return new PositionResult(meta.characterTop - meta.lineTop);
+		return new PositionResult(
+				(double) (meta.characterTop - meta.lineTop) / (double) (meta.lineBottom - meta.lineTop));
 	}
 
 }
