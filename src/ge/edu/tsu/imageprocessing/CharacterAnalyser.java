@@ -113,9 +113,13 @@ public class CharacterAnalyser {
 		return res;
 	}
 
-	private static int findLineTop(Mat image) {
-		for (int i = 0; i < image.rows(); i++) {
-			for (int j = 0; j < image.row(i).cols(); j++) {
+	private static int findLineTop(Mat image, int offsetX, int offsetY, int toX, int toY) {
+
+		toY = toY == -1 ? image.rows() : toY;
+		toX = toX == -1 ? image.cols() : toX;
+
+		for (int i = 0 + offsetY; i < toY; i++) {
+			for (int j = 0 + offsetX; j < toX; j++) {
 				if (AlgorithmDecorator.pointIsBlack(image, j, i)) {
 					return i;
 				}
@@ -124,9 +128,12 @@ public class CharacterAnalyser {
 		return 0;
 	}
 
-	private static int findLineBottom(Mat image) {
-		for (int i = image.rows() - 1; i >= 0; i--) {
-			for (int j = 0; j < image.row(i).cols(); j++) {
+	private static int findLineBottom(Mat image, int offsetX, int offsetY, int toX, int toY) {
+		toY = toY == -1 ? 0 : toY;
+		toX = toX == -1 ? image.cols() : toX;
+
+		for (int i = image.rows() - 1 - offsetY; i >= toY; i--) {
+			for (int j = 0 + offsetX; j < toX; j++) {
 				if (AlgorithmDecorator.pointIsBlack(image, j, i)) {
 					return i;
 				}
@@ -137,8 +144,8 @@ public class CharacterAnalyser {
 
 	public static Mat learn(Mat image, ArrayList<ArrayList<Point[]>> glyphs, String file) {
 
-		int lineTop = findLineTop(image);
-		int lineBottom = findLineBottom(image);
+		int lineTop = findLineTop(image, 0, 0, -1, -1);
+		int lineBottom = findLineBottom(image, 0, 0, -1, -1);
 		// Imgproc.line(image, new Point(0, lineTop), new Point(500, lineTop),
 		// new Scalar(150));
 		// Imgproc.line(image, new Point(0, lineBottom), new Point(500,
@@ -165,6 +172,17 @@ public class CharacterAnalyser {
 
 				if (character.cols() < (int) average)
 					continue;
+
+				// int charTop = findLineTop(localImage, (int) word.get(i)[0].x,
+				// (int) word.get(i)[0].y,
+				// (int) word.get(i)[1].x, (int) word.get(i)[1].y);
+
+				// System.out.println(charTop);
+				// System.out.println((int) word.get(i)[0].y);
+				// System.out.println();
+
+				character = localImage.submat((int) word.get(i)[0].y, (int) word.get(i)[1].y, (int) word.get(i)[0].x,
+						(int) word.get(i)[1].x);
 
 				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
 				// new Scalar(150), 1);
@@ -202,8 +220,8 @@ public class CharacterAnalyser {
 
 	public static Mat analyse(Mat image, ArrayList<ArrayList<Point[]>> glyphs, String file) {
 
-		int lineTop = findLineTop(image);
-		int lineBottom = findLineBottom(image);
+		int lineTop = findLineTop(image, 0, 0, -1, -1);
+		int lineBottom = findLineBottom(image, 0, 0, -1, -1);
 
 		Mat localImage = new Mat();
 		image.copyTo(localImage);
@@ -226,20 +244,34 @@ public class CharacterAnalyser {
 
 			for (int i = 0; i < word.size(); i++) {
 
+				// detect that bounded thing is character
 				Mat character = localImage.submat((int) word.get(i)[0].y, (int) word.get(i)[1].y,
 						(int) word.get(i)[0].x, (int) word.get(i)[1].x);
-
 				if (character.cols() < (int) average)
 					continue;
 
+				int charTop = findLineTop(localImage, (int) word.get(i)[0].x, (int) word.get(i)[0].y,
+						(int) word.get(i)[1].x, (int) word.get(i)[1].y);
+				int charBottom = findLineBottom(localImage, (int) word.get(i)[0].x,
+						image.rows() - (int) word.get(i)[1].y, (int) word.get(i)[1].x, (int) word.get(i)[0].y);
+
+				charTop--;
+				charBottom++;
+
+				character = localImage.submat(charTop, charBottom, (int) word.get(i)[0].x, (int) word.get(i)[1].x);
+
 				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
 				// new Scalar(150), 1);
+
+				// Imgproc.rectangle(localImage, new Point(word.get(i)[0].x,
+				// charTop),
+				// new Point(word.get(i)[1].x, charBottom), new Scalar(150), 1);
 
 				// metadata
 				BasicMetadata metadata = new BasicMetadata();
 				metadata.lineTop = lineTop;
 				metadata.lineBottom = lineBottom;
-				metadata.characterTop = (int) word.get(i)[0].y;
+				metadata.characterTop = charTop;
 
 				// features
 				InvariantsResult invs = (new Invariants()).extractFeature(character, null);
@@ -252,7 +284,7 @@ public class CharacterAnalyser {
 
 				System.out.print(base.getClosest(set));
 				System.out.println("     " + base.getLastSmallestDistance());
-				// System.out.println(set);
+				System.out.println(set);
 				System.out.println();
 
 			}

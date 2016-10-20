@@ -42,8 +42,7 @@ public class Main {
 		newImage = alg.execute(image);
 
 		newImage = CharacterAnalyser.analyse(newImage, glyphs, "base/characters.base");
-		// newImage = CharacterAnalyser.learn(newImage, glyphs,
-		// "base/characters.base");
+//		newImage = CharacterAnalyser.learn(newImage, glyphs, "base/characters.base");
 
 		if (newImage.dataAddr() == 0) {
 			System.err.println("unable to load image");
