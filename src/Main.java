@@ -8,6 +8,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import ge.edu.tsu.imageprocessing.*;
+import ge.edu.tsu.imageprocessing.layout.BasicLayoutAnalyser;
 
 public class Main {
 
@@ -19,7 +20,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("learn/sylfaen-50.jpg");
+		Mat image = Imgcodecs.imread("learn/sylfaen-50-test-2.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -41,8 +42,13 @@ public class Main {
 
 		newImage = alg.execute(image);
 
-		newImage = CharacterAnalyser.analyse(newImage, glyphs, "base/characters.base");
-//		newImage = CharacterAnalyser.learn(newImage, glyphs, "base/characters.base");
+		BasicLayoutAnalyser layout = new BasicLayoutAnalyser();
+		layout.extractLines(newImage);
+
+		// newImage = CharacterAnalyser.analyse(newImage, glyphs,
+		// "base/characters.base");
+		// newImage = CharacterAnalyser.learn(newImage, glyphs,
+		// "base/characters.base");
 
 		if (newImage.dataAddr() == 0) {
 			System.err.println("unable to load image");

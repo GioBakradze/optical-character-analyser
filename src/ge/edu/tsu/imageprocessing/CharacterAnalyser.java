@@ -180,9 +180,16 @@ public class CharacterAnalyser {
 				// System.out.println(charTop);
 				// System.out.println((int) word.get(i)[0].y);
 				// System.out.println();
+				
+				int charTop = findLineTop(localImage, (int) word.get(i)[0].x, (int) word.get(i)[0].y,
+						(int) word.get(i)[1].x, (int) word.get(i)[1].y);
+				int charBottom = findLineBottom(localImage, (int) word.get(i)[0].x,
+						image.rows() - (int) word.get(i)[1].y, (int) word.get(i)[1].x, (int) word.get(i)[0].y);
 
-				character = localImage.submat((int) word.get(i)[0].y, (int) word.get(i)[1].y, (int) word.get(i)[0].x,
-						(int) word.get(i)[1].x);
+				charTop--;
+				charBottom++;
+
+				character = localImage.submat(charTop, charBottom, (int) word.get(i)[0].x, (int) word.get(i)[1].x);
 
 				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
 				// new Scalar(150), 1);
@@ -191,7 +198,7 @@ public class CharacterAnalyser {
 				BasicMetadata metadata = new BasicMetadata();
 				metadata.lineTop = lineTop;
 				metadata.lineBottom = lineBottom;
-				metadata.characterTop = (int) word.get(i)[0].y;
+				metadata.characterTop = charTop;
 
 				// features
 				InvariantsResult invs = (new Invariants()).extractFeature(character, null);
@@ -263,10 +270,6 @@ public class CharacterAnalyser {
 				// Imgproc.rectangle(localImage, word.get(i)[0], word.get(i)[1],
 				// new Scalar(150), 1);
 
-				// Imgproc.rectangle(localImage, new Point(word.get(i)[0].x,
-				// charTop),
-				// new Point(word.get(i)[1].x, charBottom), new Scalar(150), 1);
-
 				// metadata
 				BasicMetadata metadata = new BasicMetadata();
 				metadata.lineTop = lineTop;
@@ -286,10 +289,13 @@ public class CharacterAnalyser {
 				System.out.println("     " + base.getLastSmallestDistance());
 				System.out.println(set);
 				System.out.println();
-
+				
+				// drawing rectangles
+				Imgproc.rectangle(localImage, new Point(word.get(i)[0].x, charTop),
+						new Point(word.get(i)[1].x, charBottom), new Scalar(150), 1);
 			}
 
-			// System.out.print(" ");
+//			 System.out.print(" ");
 		}
 
 		return localImage;
