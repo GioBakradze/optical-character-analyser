@@ -3,8 +3,12 @@ package ge.edu.tsu.imageprocessing.layout;
 import java.util.ArrayList;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import ge.edu.tsu.imageprocessing.AlgorithmDecorator;
+import ge.edu.tsu.imageprocessing.Colors;
 
 public class BasicLayoutAnalyser implements LayoutAnalyser {
 
@@ -37,12 +41,110 @@ public class BasicLayoutAnalyser implements LayoutAnalyser {
 		return 0;
 	}
 
+	private int[] blackPointsCountX(Mat image, int startY, int endY, int startX, int endX) {
+
+		startY = startY == -1 ? 0 : startY;
+		endY = endY == -1 ? image.rows() : endY;
+		startX = startX == -1 ? 0 : startX;
+		endX = endX == -1 ? image.cols() : endX;
+
+		int[] res = new int[image.cols()];
+
+		for (int i = 0; i < res.length; i++) {
+			res[i] = 0;
+		}
+
+		for (int j = startX; j < endX; j++) {
+			for (int i = startY; i < endY; i++) {
+				if (Colors.getInstance().pointIsBlack(image, j, i))
+					res[j]++;
+			}
+		}
+
+		return res;
+	}
+
+	private int[] blackPointsCountY(Mat image, int startY, int endY, int startX, int endX) {
+
+		startY = startY == -1 ? 0 : startY;
+		endY = endY == -1 ? image.rows() : endY;
+		startX = startX == -1 ? 0 : startX;
+		endX = endX == -1 ? image.cols() : endX;
+
+		int[] res = new int[image.rows()];
+
+		for (int i = 0; i < res.length; i++) {
+			res[i] = 0;
+		}
+
+		for (int i = startY; i < endY; i++) {
+			for (int j = startX; j < endX; j++) {
+				if (Colors.getInstance().pointIsBlack(image, j, i))
+					res[i]++;
+			}
+		}
+
+		return res;
+	}
+
 	@Override
 	public ArrayList<LayoutLine> extractLines(Mat image) {
 
-		ArrayList<LayoutLine> document = new ArrayList<>();
+		// *****************************************
+		// extract lines upper and lower bounds
+		int[] counts = blackPointsCountY(image, -1, -1, -1, -1);
+		ArrayList<int[]> lines = new ArrayList<>();
 
-		System.out.println(findLineTop(image, 0, 0, -1, -1));
+		for (int i = 0; i < counts.length - 1; i++) {
+			if (counts[i] == 0 && counts[i + 1] != 0) {
+				int[] line = new int[2];
+				line[0] = i;
+				lines.add(line);
+			}
+		}
+		for (int i = counts.length - 1, k = lines.size() - 1; i > 0; i--) {
+			if (counts[i] == 0 && counts[i - 1] != 0) {
+				lines.get(k)[1] = i;
+				k--;
+			}
+		}
+
+		// *****************************************
+		// extract lines left and right bounds
+
+		for (int[] line : lines) {
+			int[] borders = blackPointsCountX(image, line[0], line[1], -1, -1);
+			int lineLeftBound = -1;
+			int lineRightBound = -1;
+			
+			for (int i=0; i < borders.length - 1; i++) {
+				if (borders[i] == 0 && borders[i + 1] != 0) {
+					lineLeftBound = lineLeftBound == -1 ? i : lineLeftBound;
+//					Imgproc.line(image, new Point(i, line[0]), new Point(i, line[1]), new Scalar(150));
+				} 
+			}
+			
+			for (int i=borders.length - 1; i > 0; i--) {
+				if (borders[i] == 0 && borders[i - 1] != 0) {
+					lineRightBound = lineRightBound == -1 ? i : lineRightBound;
+				}
+			}
+			
+			Imgproc.line(image, new Point(lineLeftBound, line[0]), new Point(lineLeftBound, line[1]), new Scalar(150));
+			Imgproc.line(image, new Point(lineRightBound, line[0]), new Point(lineRightBound, line[1]), new Scalar(150));
+			
+			System.out.print(line[0] + " ");
+			System.out.print(line[1]);
+			System.out.println();
+			
+			Imgproc.line(image, new Point(0, line[0]), new Point(500, line[0]), new Scalar(150));
+			Imgproc.line(image, new Point(0, line[1]), new Point(500, line[1]), new Scalar(150));
+		}
+		
+		
+		// *****************************************
+		// result
+		ArrayList<LayoutLine> document = new ArrayList<>();
 
 		return document;
 	}
