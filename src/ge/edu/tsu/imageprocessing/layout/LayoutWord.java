@@ -1,5 +1,7 @@
 package ge.edu.tsu.imageprocessing.layout;
 
+import java.util.ArrayList;
+
 import org.opencv.core.Point;
 
 public class LayoutWord {

@@ -114,31 +114,41 @@ public class BasicLayoutAnalyser implements LayoutAnalyser {
 
 		for (int[] line : lines) {
 			int[] borders = blackPointsCountX(image, line[0], line[1], -1, -1);
-			int lineLeftBound = -1;
-			int lineRightBound = -1;
+			ArrayList<Integer> characters = new ArrayList<>();
+			ArrayList<Integer> words = new ArrayList<>();
 			
 			for (int i=0; i < borders.length - 1; i++) {
 				if (borders[i] == 0 && borders[i + 1] != 0) {
-					lineLeftBound = lineLeftBound == -1 ? i : lineLeftBound;
-//					Imgproc.line(image, new Point(i, line[0]), new Point(i, line[1]), new Scalar(150));
+					characters.add(i);
 				} 
-			}
-			
-			for (int i=borders.length - 1; i > 0; i--) {
-				if (borders[i] == 0 && borders[i - 1] != 0) {
-					lineRightBound = lineRightBound == -1 ? i : lineRightBound;
+				
+				if (borders[i] != 0 && borders[i + 1] == 0) {
+					characters.add(i + 1);
 				}
 			}
 			
-			Imgproc.line(image, new Point(lineLeftBound, line[0]), new Point(lineLeftBound, line[1]), new Scalar(150));
-			Imgproc.line(image, new Point(lineRightBound, line[0]), new Point(lineRightBound, line[1]), new Scalar(150));
+			double average = 0;
+			double count = 0;
 			
-			System.out.print(line[0] + " ");
-			System.out.print(line[1]);
-			System.out.println();
+			for (int i=1; i < characters.size() - 1; i += 2) {
+				average += characters.get(i + 1) - characters.get(i);
+				count++;
+			}
+			average /= count;
+//			average = 7.127659574468085;
 			
-			Imgproc.line(image, new Point(0, line[0]), new Point(500, line[0]), new Scalar(150));
-			Imgproc.line(image, new Point(0, line[1]), new Point(500, line[1]), new Scalar(150));
+			words.add(characters.get(0));
+			for (int i=1; i < characters.size() - 1; i += 2) {
+				if (characters.get(i + 1) - characters.get(i) >= average) {
+					Imgproc.line(image, new Point(characters.get(i), line[0]), new Point(characters.get(i), line[1]), new Scalar(150));
+					Imgproc.line(image, new Point(characters.get(i + 1), line[0]), new Point(characters.get(i + 1), line[1]), new Scalar(150));
+				}
+			}
+			
+			System.out.println(average);
+			
+//			Imgproc.line(image, new Point(0, line[0]), new Point(500, line[0]), new Scalar(150));
+//			Imgproc.line(image, new Point(0, line[1]), new Point(500, line[1]), new Scalar(150));
 		}
 		
 		
