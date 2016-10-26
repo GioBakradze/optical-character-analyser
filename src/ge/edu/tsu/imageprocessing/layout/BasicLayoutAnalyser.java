@@ -1,6 +1,7 @@
 package ge.edu.tsu.imageprocessing.layout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -112,49 +113,74 @@ public class BasicLayoutAnalyser implements LayoutAnalyser {
 		// *****************************************
 		// extract lines left and right bounds
 
+		ArrayList<LayoutLine> document = new ArrayList<>();
+
 		for (int[] line : lines) {
 			int[] borders = blackPointsCountX(image, line[0], line[1], -1, -1);
 			ArrayList<Integer> characters = new ArrayList<>();
-			ArrayList<Integer> words = new ArrayList<>();
-			
-			for (int i=0; i < borders.length - 1; i++) {
+
+			HashMap<Integer, Boolean> startX = new HashMap<>();
+			HashMap<Integer, Boolean> endX = new HashMap<>();
+
+			for (int i = 0; i < borders.length - 1; i++) {
 				if (borders[i] == 0 && borders[i + 1] != 0) {
 					characters.add(i);
-				} 
-				
+				}
+
 				if (borders[i] != 0 && borders[i + 1] == 0) {
 					characters.add(i + 1);
 				}
 			}
-			
+
 			double average = 0;
 			double count = 0;
-			
-			for (int i=1; i < characters.size() - 1; i += 2) {
+
+			for (int i = 1; i < characters.size() - 1; i += 2) {
 				average += characters.get(i + 1) - characters.get(i);
 				count++;
 			}
 			average /= count;
-//			average = 7.127659574468085;
-			
-			words.add(characters.get(0));
-			for (int i=1; i < characters.size() - 1; i += 2) {
+
+			startX.put(characters.get(0), true);
+			for (int i = 1; i < characters.size() - 1; i += 2) {
 				if (characters.get(i + 1) - characters.get(i) >= average) {
-					Imgproc.line(image, new Point(characters.get(i), line[0]), new Point(characters.get(i), line[1]), new Scalar(150));
-					Imgproc.line(image, new Point(characters.get(i + 1), line[0]), new Point(characters.get(i + 1), line[1]), new Scalar(150));
+					endX.put(characters.get(i), true);
+					startX.put(characters.get(i + 1), true);
 				}
 			}
-			
-			System.out.println(average);
-			
-//			Imgproc.line(image, new Point(0, line[0]), new Point(500, line[0]), new Scalar(150));
-//			Imgproc.line(image, new Point(0, line[1]), new Point(500, line[1]), new Scalar(150));
+			endX.put(characters.get(characters.size() - 1), true);
+
+			LayoutLine layoutLine = new LayoutLine();
+			LayoutWord layoutWord;
+			Point topLeft = null, bottomRight = null;
+
+			for (int i = 0; i < characters.size(); i++) {
+				
+				int ch = characters.get(i);
+				
+				if (startX.containsKey(ch)) {
+					topLeft = new Point(ch, line[0]);
+				}
+
+				if (endX.containsKey(ch)) {
+					bottomRight = new Point(ch, line[1]);
+					layoutWord = new LayoutWord(topLeft, bottomRight);
+					layoutLine.addWord(layoutWord);
+				}
+
+				// Imgproc.line(image, new Point(characters.get(i), line[0]),
+				// new Point(characters.get(i), line[1]), new Scalar(150));
+			}
+
+			for (LayoutWord w : layoutLine.getWords()) {
+//				System.out.println(w.getTopLeft());
+				Imgproc.rectangle(image, w.getTopLeft(), w.getBottomRight(), new Scalar(150), 1);
+			}
+
+//			System.out.println(average);
+
+			document.add(layoutLine);
 		}
-		
-		
-		// *****************************************
-		// result
-		ArrayList<LayoutLine> document = new ArrayList<>();
 
 		return document;
 	}
