@@ -151,34 +151,52 @@ public class BasicLayoutAnalyser implements LayoutAnalyser {
 			endX.put(characters.get(characters.size() - 1), true);
 
 			LayoutLine layoutLine = new LayoutLine();
-			LayoutWord layoutWord;
+			LayoutWord layoutWord = null;
 			Point topLeft = null, bottomRight = null;
 
 			for (int i = 0; i < characters.size(); i++) {
-				
+
 				int ch = characters.get(i);
-				
+
 				if (startX.containsKey(ch)) {
 					topLeft = new Point(ch, line[0]);
+					layoutWord = new LayoutWord();
 				}
 
 				if (endX.containsKey(ch)) {
 					bottomRight = new Point(ch, line[1]);
-					layoutWord = new LayoutWord(topLeft, bottomRight);
+					layoutWord.setTopLeft(topLeft);
+					layoutWord.setBottomRight(bottomRight);
 					layoutLine.addWord(layoutWord);
 				}
 
-				// Imgproc.line(image, new Point(characters.get(i), line[0]),
-				// new Point(characters.get(i), line[1]), new Scalar(150));
+				if ((i + 1) % 2 != 0) {
+					LayoutCharacter character = new LayoutCharacter();
+
+					int[] charBlackPointCount = blackPointsCountY(image, line[0], line[1], characters.get(i),
+							characters.get(i + 1));
+
+					for (int k=line[0]; k < line[1]; k++) {
+						if (charBlackPointCount[k] == 0 && charBlackPointCount[k + 1] != 0) {
+							character.setTopLeft(new Point(characters.get(i), k));
+						}
+						
+						if (charBlackPointCount[k] != 0 && charBlackPointCount[k + 1] == 0) {
+							character.setBottomRight(new Point(characters.get(i + 1), k + 1));
+						}
+					}
+					
+					layoutWord.addCharacter(character);
+				}
 			}
 
-			for (LayoutWord w : layoutLine.getWords()) {
-//				System.out.println(w.getTopLeft());
-				Imgproc.rectangle(image, w.getTopLeft(), w.getBottomRight(), new Scalar(150), 1);
-			}
-
-//			System.out.println(average);
-
+//			for (LayoutWord w : layoutLine.getWords()) {
+//				for (LayoutCharacter c : w.getCharacters()) {
+//					Imgproc.rectangle(image, c.getTopLeft(), c.getBottomRight(), new Scalar(150), 1);
+//				}
+//				 Imgproc.rectangle(image, w.getTopLeft(), w.getBottomRight(),
+//				 new Scalar(150), 1);
+//			}
 			document.add(layoutLine);
 		}
 
