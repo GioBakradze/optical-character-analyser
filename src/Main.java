@@ -9,6 +9,7 @@ import org.opencv.imgproc.Imgproc;
 
 import ge.edu.tsu.imageprocessing.*;
 import ge.edu.tsu.imageprocessing.layout.BasicLayoutAnalyser;
+import ge.edu.tsu.imageprocessing.layout.LayoutLine;
 
 public class Main {
 
@@ -20,7 +21,7 @@ public class Main {
 
 		// ###################
 		// open image and detect text regions
-		Mat image = Imgcodecs.imread("learn/sylfaen-50-test-2.jpg");
+		Mat image = Imgcodecs.imread("learn/sylfaen-50.jpg");
 		Mat newImage;
 		ArrayList<Rect> boundingRects = CharacterAnalyser.getBoundingRects(image);
 
@@ -43,7 +44,10 @@ public class Main {
 		newImage = alg.execute(image);
 
 		BasicLayoutAnalyser layout = new BasicLayoutAnalyser();
-		layout.extractLines(newImage);
+		ArrayList<LayoutLine> lines = layout.extractLines(newImage);
+
+		// CharacterAnalyser.learnNew(newImage, lines, "base/characters.base");
+		CharacterAnalyser.analyseNew(newImage, lines, "base/characters.base");
 
 		// newImage = CharacterAnalyser.analyse(newImage, glyphs,
 		// "base/characters.base");
