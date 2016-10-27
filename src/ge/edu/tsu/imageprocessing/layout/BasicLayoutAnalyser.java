@@ -5,42 +5,10 @@ import java.util.HashMap;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 
-import ge.edu.tsu.imageprocessing.AlgorithmDecorator;
 import ge.edu.tsu.imageprocessing.Colors;
 
 public class BasicLayoutAnalyser implements LayoutAnalyser {
-
-	private int findLineTop(Mat image, int offsetX, int offsetY, int toX, int toY) {
-
-		toY = toY == -1 ? image.rows() : toY;
-		toX = toX == -1 ? image.cols() : toX;
-
-		for (int i = 0 + offsetY; i < toY; i++) {
-			for (int j = 0 + offsetX; j < toX; j++) {
-				if (AlgorithmDecorator.pointIsBlack(image, j, i)) {
-					return i;
-				}
-			}
-		}
-		return 0;
-	}
-
-	private int findLineBottom(Mat image, int offsetX, int offsetY, int toX, int toY) {
-		toY = toY == -1 ? 0 : toY;
-		toX = toX == -1 ? image.cols() : toX;
-
-		for (int i = image.rows() - 1 - offsetY; i >= toY; i--) {
-			for (int j = 0 + offsetX; j < toX; j++) {
-				if (AlgorithmDecorator.pointIsBlack(image, j, i)) {
-					return i;
-				}
-			}
-		}
-		return 0;
-	}
 
 	private int[] blackPointsCountX(Mat image, int startY, int endY, int startX, int endX) {
 
@@ -176,27 +144,28 @@ public class BasicLayoutAnalyser implements LayoutAnalyser {
 					int[] charBlackPointCount = blackPointsCountY(image, line[0], line[1], characters.get(i),
 							characters.get(i + 1));
 
-					for (int k=line[0]; k < line[1]; k++) {
+					for (int k = line[0]; k < line[1]; k++) {
 						if (charBlackPointCount[k] == 0 && charBlackPointCount[k + 1] != 0) {
 							character.setTopLeft(new Point(characters.get(i), k));
 						}
-						
+
 						if (charBlackPointCount[k] != 0 && charBlackPointCount[k + 1] == 0) {
 							character.setBottomRight(new Point(characters.get(i + 1), k + 1));
 						}
 					}
-					
+
 					layoutWord.addCharacter(character);
 				}
 			}
 
-//			for (LayoutWord w : layoutLine.getWords()) {
-//				for (LayoutCharacter c : w.getCharacters()) {
-//					Imgproc.rectangle(image, c.getTopLeft(), c.getBottomRight(), new Scalar(150), 1);
-//				}
-//				 Imgproc.rectangle(image, w.getTopLeft(), w.getBottomRight(),
-//				 new Scalar(150), 1);
-//			}
+			// for (LayoutWord w : layoutLine.getWords()) {
+			// for (LayoutCharacter c : w.getCharacters()) {
+			// Imgproc.rectangle(image, c.getTopLeft(), c.getBottomRight(), new
+			// Scalar(150), 1);
+			// }
+			// Imgproc.rectangle(image, w.getTopLeft(), w.getBottomRight(),
+			// new Scalar(150), 1);
+			// }
 			document.add(layoutLine);
 		}
 
